@@ -1,0 +1,155 @@
+{
+  "id": "module-2",
+  "courseId": "regex",
+  "order": 2,
+  "title": "Quantifiers & Concept Stacking",
+  "description": "Control repetition counts (+, *, {n}) combined with M1 character classes.",
+  "primer": {
+    "syntaxToken": "+, *, {n}",
+    "definition": "Quantifiers specify how many times the preceding character or class repeats: + (1+), * (0+), {n} (exact n count).",
+    "goldenRule": "Quantifiers attach strictly to the single character class token directly preceding them."
+  },
+  "cards": [
+    {
+      "id": "m2_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match one or more of any token using +.",
+      "ghostTemplate": "\\d+",
+      "canonicalSolution": "\\d+",
+      "testCases": [{ "text": "123", "shouldMatch": true }]
+    },
+    {
+      "id": "m2_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match zero or more word characters using *.",
+      "ghostTemplate": "\\w*",
+      "canonicalSolution": "\\w*",
+      "testCases": [{ "text": "code", "shouldMatch": true }]
+    },
+    {
+      "id": "m2_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match exactly 3 digits using {3}.",
+      "ghostTemplate": "\\d{3}",
+      "canonicalSolution": "\\d{3}",
+      "testCases": [{ "text": "456", "shouldMatch": true }, { "text": "12", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c4",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 2 to 4 word characters using {2,4}.",
+      "ghostTemplate": "\\w{2,4}",
+      "canonicalSolution": "\\w{2,4}",
+      "testCases": [{ "text": "item", "shouldMatch": true }]
+    },
+    {
+      "id": "m2_c5",
+      "type": "compound",
+      "scaffold": "ghost",
+      "prompt": "Match a sequence of one or more digits.",
+      "ghostTemplate": "\\d+",
+      "canonicalSolution": "\\d+",
+      "testCases": [{ "text": "Order #48291", "shouldMatch": true }, { "text": "No numbers", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c6",
+      "type": "compound",
+      "scaffold": "ghost",
+      "prompt": "Match a sequence of one or more word characters.",
+      "ghostTemplate": "\\w+",
+      "canonicalSolution": "\\w+",
+      "testCases": [{ "text": "regex_101", "shouldMatch": true }, { "text": "!@#$", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c7",
+      "type": "compound",
+      "scaffold": "ghost",
+      "prompt": "Match one or more whitespace spaces.",
+      "ghostTemplate": "\\s+",
+      "canonicalSolution": "\\s+",
+      "testCases": [{ "text": "hello   world", "shouldMatch": true }]
+    },
+    {
+      "id": "m2_c8",
+      "type": "compound",
+      "scaffold": "ghost",
+      "prompt": "Match a 4-digit PIN or year.",
+      "ghostTemplate": "\\d{4}",
+      "canonicalSolution": "\\d{4}",
+      "testCases": [{ "text": "Year 2026", "shouldMatch": true }, { "text": "123", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c9",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match word characters with length 3 or more.",
+      "ghostTemplate": "\\w{3,}",
+      "canonicalSolution": "\\w{3,}",
+      "testCases": [{ "text": "cat", "shouldMatch": true }, { "text": "in", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c10",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match zero or more spaces.",
+      "ghostTemplate": "\\s*",
+      "canonicalSolution": "\\s*",
+      "testCases": [{ "text": "test", "shouldMatch": true }]
+    },
+    {
+      "id": "m2_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match one or more non-digit characters.",
+      "ghostTemplate": "\\D+",
+      "canonicalSolution": "\\D+",
+      "testCases": [{ "text": "ABC", "shouldMatch": true }, { "text": "123", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a 5-character word token.",
+      "ghostTemplate": "\\w{5}",
+      "canonicalSolution": "\\w{5}",
+      "testCases": [{ "text": "hello", "shouldMatch": true }, { "text": "code", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match between 2 and 4 digits.",
+      "ghostTemplate": "\\d{2,4}",
+      "canonicalSolution": "\\d{2,4}",
+      "testCases": [{ "text": "123", "shouldMatch": true }, { "text": "1", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c14",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match one or more digits in sequence.",
+      "canonicalSolution": "\\d+",
+      "testCases": [{ "text": "ID 9982", "shouldMatch": true }, { "text": "none", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c15",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match exactly 3 word characters.",
+      "canonicalSolution": "\\w{3}",
+      "testCases": [{ "text": "dev", "shouldMatch": true }, { "text": "hi", "shouldMatch": false }]
+    },
+    {
+      "id": "m2_c16",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match one or more non-space characters.",
+      "canonicalSolution": "\\S+",
+      "testCases": [{ "text": "CodeReps", "shouldMatch": true }, { "text": "   ", "shouldMatch": false }]
+    }
+  ]
+}

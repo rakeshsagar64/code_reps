@@ -1,0 +1,84 @@
+{
+  "id": "module-1",
+  "courseId": "regex",
+  "order": 1,
+  "title": "Character Classes",
+  "description": "Master \\d, \\w, and \\s.",
+  "primer": {
+    "syntaxToken": "\\d, \\w, \\s",
+    "definition": "\\d = digits, \\w = word characters (alphanumeric + _), \\s = whitespace.",
+    "goldenRule": "Capitalization inverts: \\D non-digit, \\W non-word, \\S non-space."
+  },
+  "cards": [
+    {
+      "id": "m1_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match any single digit.",
+      "ghostTemplate": "\\d",
+      "canonicalSolution": "\\d",
+      "testCases": [{ "text": "User 7", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match any word character.",
+      "ghostTemplate": "\\w",
+      "canonicalSolution": "\\w",
+      "testCases": [{ "text": "code_123", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match any whitespace character.",
+      "ghostTemplate": "\\s",
+      "canonicalSolution": "\\s",
+      "testCases": [{ "text": "hello world", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c4",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match a digit in a string.",
+      "ghostTemplate": "\\d",
+      "canonicalSolution": "\\d",
+      "testCases": [{ "text": "Item 9", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c5",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match a word character.",
+      "ghostTemplate": "\\w",
+      "canonicalSolution": "\\w",
+      "testCases": [{ "text": "A", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c6",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match a non-digit character.",
+      "ghostTemplate": "\\D",
+      "canonicalSolution": "\\D",
+      "testCases": [{ "text": "7", "shouldMatch": false }]
+    },
+    {
+      "id": "m1_c7",
+      "type": "atomic",
+      "scaffold": "blind",
+      "prompt": "Match a single digit without ghost prompt.",
+      "canonicalSolution": "\\d",
+      "testCases": [{ "text": "5", "shouldMatch": true }]
+    },
+    {
+      "id": "m1_c8",
+      "type": "atomic",
+      "scaffold": "blind",
+      "prompt": "Match a word character without ghost prompt.",
+      "canonicalSolution": "\\w",
+      "testCases": [{ "text": "x", "shouldMatch": true }]
+    }
+  ]
+}

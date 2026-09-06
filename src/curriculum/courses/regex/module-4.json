@@ -1,0 +1,552 @@
+{
+  "id": "module-4",
+  "courseId": "regex",
+  "order": 4,
+  "title": "Grouping & Concept Stacking",
+  "description": "Isolate sub-expressions using (...) and stack with character classes, quantifiers, and anchors.",
+  "primer": {
+    "syntaxToken": "(...)",
+    "definition": "Parentheses group sub-patterns into single units to apply quantifiers, specify alternation, or capture matches.",
+    "goldenRule": "Quantifiers placed directly after a closing parenthesis apply to the entire group inside."
+  },
+  "cards": [
+    {
+      "id": "m4_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Group characters 'ab' into a single unit using ().",
+      "ghostTemplate": "(ab)",
+      "canonicalSolution": "(ab)",
+      "testCases": [{ "text": "ab", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Group 3 digits together.",
+      "ghostTemplate": "(\\d{3})",
+      "canonicalSolution": "(\\d{3})",
+      "testCases": [{ "text": "123", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Group one or more word characters.",
+      "ghostTemplate": "(\\w+)",
+      "canonicalSolution": "(\\w+)",
+      "testCases": [{ "text": "code", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c4",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match either 'cat' or 'dog' using alternation inside a group.",
+      "ghostTemplate": "(cat|dog)",
+      "canonicalSolution": "(cat|dog)",
+      "testCases": [{ "text": "cat", "shouldMatch": true }, { "text": "dog", "shouldMatch": true }, { "text": "fish", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c5",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'LOG' or 'ERR' inside a group.",
+      "ghostTemplate": "(LOG|ERR)",
+      "canonicalSolution": "(LOG|ERR)",
+      "testCases": [{ "text": "LOG", "shouldMatch": true }, { "text": "ERR", "shouldMatch": true }, { "text": "INFO", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c6",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Repeat a grouped sequence of 2 digits two times.",
+      "ghostTemplate": "(\\d{2}){2}",
+      "canonicalSolution": "(\\d{2}){2}",
+      "testCases": [{ "text": "1234", "shouldMatch": true }, { "text": "12", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c7",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Group 4 word characters.",
+      "ghostTemplate": "(\\w{4})",
+      "canonicalSolution": "(\\w{4})",
+      "testCases": [{ "text": "data", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c8",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Group one or more whitespace spaces.",
+      "ghostTemplate": "(\\s+)",
+      "canonicalSolution": "(\\s+)",
+      "testCases": [{ "text": "   ", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c9",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match either 'http' or 'https' using a group.",
+      "ghostTemplate": "(http|https)",
+      "canonicalSolution": "(http|https)",
+      "testCases": [{ "text": "https", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c10",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Group a single digit followed by a word character.",
+      "ghostTemplate": "(\\d\\w)",
+      "canonicalSolution": "(\\d\\w)",
+      "testCases": [{ "text": "1a", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with 3 digits in a group followed by a hyphen and one or more word characters.",
+      "ghostTemplate": "^(\\d{3})-\\w+$",
+      "canonicalSolution": "^(\\d{3})-\\w+$",
+      "testCases": [{ "text": "555-main", "shouldMatch": true }, { "text": "55-main", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match two grouped sets of 3 digits separated by a hyphen.",
+      "ghostTemplate": "^(\\d{3})-(\\d{3})$",
+      "canonicalSolution": "^(\\d{3})-(\\d{3})$",
+      "testCases": [{ "text": "123-456", "shouldMatch": true }, { "text": "12-3456", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with 'GET' or 'POST' grouped at start of string.",
+      "ghostTemplate": "^(GET|POST)",
+      "canonicalSolution": "^(GET|POST)",
+      "testCases": [{ "text": "GET /api", "shouldMatch": true }, { "text": "PUT /api", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c14",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a group of 1 or more words followed by 1 or more digits.",
+      "ghostTemplate": "^(\\w+)\\s+(\\d+)$",
+      "canonicalSolution": "^(\\w+)\\s+(\\d+)$",
+      "testCases": [{ "text": "Item 99", "shouldMatch": true }, { "text": "Item", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c15",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a repeated pattern of 2 digits and a dot 3 times.",
+      "ghostTemplate": "^(\\d{2}\\.){3}$",
+      "canonicalSolution": "^(\\d{2}\\.){3}$",
+      "testCases": [{ "text": "10.20.30.", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c16",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match 'ID' or 'CODE' followed by a hyphen and 4 digits.",
+      "ghostTemplate": "^(ID|CODE)-\\d{4}$",
+      "canonicalSolution": "^(ID|CODE)-\\d{4}$",
+      "testCases": [{ "text": "CODE-1982", "shouldMatch": true }, { "text": "USER-1982", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c17",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match an optional group containing 'v' and digits.",
+      "ghostTemplate": "^(v\\d+)?$",
+      "canonicalSolution": "^(v\\d+)?$",
+      "testCases": [{ "text": "v2", "shouldMatch": true }, { "text": "", "shouldMatch": true }, { "text": "version2", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c18",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match two grouped word tokens separated by an underscore.",
+      "ghostTemplate": "^(\\w+)_(\\w+)$",
+      "canonicalSolution": "^(\\w+)_(\\w+)$",
+      "testCases": [{ "text": "first_last", "shouldMatch": true }, { "text": "firstlast", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c19",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match 'true' or 'false' strictly from start to end.",
+      "ghostTemplate": "^(true|false)$",
+      "canonicalSolution": "^(true|false)$",
+      "testCases": [{ "text": "true", "shouldMatch": true }, { "text": "maybe", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c20",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with a grouped prefix 'IN:' or 'OUT:'.",
+      "ghostTemplate": "^(IN|OUT):\\d+$",
+      "canonicalSolution": "^(IN|OUT):\\d+$",
+      "testCases": [{ "text": "IN:402", "shouldMatch": true }, { "text": "MID:402", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c21",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match date format DD-MM-YYYY using groups.",
+      "ghostTemplate": "^(\\d{2})-(\\d{2})-(\\d{4})$",
+      "canonicalSolution": "^(\\d{2})-(\\d{2})-(\\d{4})$",
+      "testCases": [{ "text": "15-08-2026", "shouldMatch": true }, { "text": "15-8-26", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c22",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match grouped letters followed by numbers inside brackets.",
+      "ghostTemplate": "^\\[(\\w+)\\]$",
+      "canonicalSolution": "^\\[(\\w+)\\]$",
+      "testCases": [{ "text": "[INFO]", "shouldMatch": true }, { "text": "INFO", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c23",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match 3 grouped word characters repeated twice.",
+      "ghostTemplate": "^(\\w{3}){2}$",
+      "canonicalSolution": "^(\\w{3}){2}$",
+      "testCases": [{ "text": "abcdef", "shouldMatch": true }, { "text": "abcde", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c24",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match time format HH:MM using digit groups.",
+      "ghostTemplate": "^(\\d{2}):(\\d{2})$",
+      "canonicalSolution": "^(\\d{2}):(\\d{2})$",
+      "testCases": [{ "text": "09:30", "shouldMatch": true }, { "text": "9:30", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c25",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match key-value string with grouped word key and digit value.",
+      "ghostTemplate": "^(\\w+)=(\\d+)$",
+      "canonicalSolution": "^(\\w+)=(\\d+)$",
+      "testCases": [{ "text": "port=8080", "shouldMatch": true }, { "text": "port=eight", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c26",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 3 digits grouped, followed by a hyphen, then 4 digits.",
+      "canonicalSolution": "^(\\d{3})-\\d{4}$",
+      "testCases": [{ "text": "555-1234", "shouldMatch": true }, { "text": "55-12345", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c27",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with 'http' or 'https' followed by '://'.",
+      "canonicalSolution": "^(http|https)://",
+      "testCases": [{ "text": "https://codereps.io", "shouldMatch": true }, { "text": "ftp://codereps.io", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c28",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match Social Security Number format XXX-XX-XXXX with 3 groups.",
+      "canonicalSolution": "^(\\d{3})-(\\d{2})-(\\d{4})$",
+      "testCases": [{ "text": "000-12-3456", "shouldMatch": true }, { "text": "00-123-4567", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c29",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 'yes', 'no', or 'maybe' strictly from start to end.",
+      "canonicalSolution": "^(yes|no|maybe)$",
+      "testCases": [{ "text": "maybe", "shouldMatch": true }, { "text": "sure", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c30",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 3 grouped word characters inside parentheses.",
+      "canonicalSolution": "^\\((\\w{3})\\)$",
+      "testCases": [{ "text": "(USA)", "shouldMatch": true }, { "text": "USA", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c31",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with grouped 2-digit area code in parentheses.",
+      "canonicalSolution": "^\\((\\d{2})\\)\\s+\\d+",
+      "testCases": [{ "text": "(08) 998211", "shouldMatch": true }, { "text": "08 998211", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c32",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match a quantity integer grouped followed by 'apples' or 'oranges'.",
+      "canonicalSolution": "^(\\d+)\\s+(apples|oranges)$",
+      "testCases": [{ "text": "5 apples", "shouldMatch": true }, { "text": "5 bananas", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c33",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match an IP segment: grouped sequence of 1 to 3 digits followed by a dot, repeated 3 times.",
+      "canonicalSolution": "^(\\d{1,3}\\.){3}\\d{1,3}$",
+      "testCases": [{ "text": "192.168.1.1", "shouldMatch": true }, { "text": "192.168.1", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c34",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string ending with a grouped file extension (.png or .jpg).",
+      "canonicalSolution": "\\.(png|jpg)$",
+      "testCases": [{ "text": "image.png", "shouldMatch": true }, { "text": "image.pdf", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c35",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match a grouped word name followed by function parens ().",
+      "canonicalSolution": "^(\\w+)\\(\\)$",
+      "testCases": [{ "text": "main()", "shouldMatch": true }, { "text": "main", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c36",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped year-month-day ISO string YYYY-MM-DD.",
+      "canonicalSolution": "^(\\d{4})-(\\d{2})-(\\d{2})$",
+      "testCases": [{ "text": "2026-09-06", "shouldMatch": true }, { "text": "26-09-06", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c37",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 1 or more grouped word characters repeated by optional trailing question mark.",
+      "canonicalSolution": "^(\\w+)\\?$",
+      "testCases": [{ "text": "ready?", "shouldMatch": true }, { "text": "ready", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c38",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped HTTP status codes 200 or 404 at start of string.",
+      "canonicalSolution": "^(200|404)\\b",
+      "testCases": [{ "text": "200 OK", "shouldMatch": true }, { "text": "500 Error", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c39",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped log level [INFO] or [WARN] at start of string.",
+      "canonicalSolution": "^\\[(INFO|WARN)\\]",
+      "testCases": [{ "text": "[INFO] System up", "shouldMatch": true }, { "text": "[DEBUG] Testing", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c40",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match dollar sign followed by grouped digits and optional cents.",
+      "canonicalSolution": "^\\$(\\d+)(\\.\\d{2})?$",
+      "testCases": [{ "text": "$19.99", "shouldMatch": true }, { "text": "$19", "shouldMatch": true }, { "text": "19.99", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c41",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match user tag format @word grouped.",
+      "canonicalSolution": "^@(\\w+)$",
+      "testCases": [{ "text": "@gopal", "shouldMatch": true }, { "text": "gopal", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c42",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match two grouped words separated by a colon.",
+      "canonicalSolution": "^(\\w+):(\\w+)$",
+      "testCases": [{ "text": "user:admin", "shouldMatch": true }, { "text": "user-admin", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c43",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match version tag vX.Y.Z using grouped integers.",
+      "canonicalSolution": "^v(\\d+)\\.(\\d+)\\.(\\d+)$",
+      "testCases": [{ "text": "v2.0.0", "shouldMatch": true }, { "text": "2.0.0", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c44",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped word command followed by one or more arguments.",
+      "ghostTemplate": "^(\\w+)\\s+(.+)$",
+      "canonicalSolution": "^(\\w+)\\s+(.+)$",
+      "testCases": [{ "text": "run app.js", "shouldMatch": true }]
+    },
+    {
+      "id": "m4_c45",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match optional grouped 'INC' or 'DEC' prefix followed by digits.",
+      "canonicalSolution": "^(INC|DEC)?\\d+$",
+      "testCases": [{ "text": "INC100", "shouldMatch": true }, { "text": "100", "shouldMatch": true }, { "text": "ADD100", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c46",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match word inside double angle brackets <<word>> using groups.",
+      "canonicalSolution": "^<<(\\w+)>>$",
+      "testCases": [{ "text": "<<TOKEN>>", "shouldMatch": true }, { "text": "<TOKEN>", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c47",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 2 grouped word tokens separated by a single space.",
+      "canonicalSolution": "^(\\w+)\\s+(\\w+)$",
+      "testCases": [{ "text": "hello world", "shouldMatch": true }, { "text": "hello", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c48",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 3 grouped word tokens separated by hyphens.",
+      "canonicalSolution": "^(\\w+)-(\\w+)-(\\w+)$",
+      "testCases": [{ "text": "one-two-three", "shouldMatch": true }, { "text": "one-two", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c49",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with grouped 'v1' or 'v2' API path.",
+      "canonicalSolution": "^/(v1|v2)/\\w+$",
+      "testCases": [{ "text": "/v1/users", "shouldMatch": true }, { "text": "/v3/users", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c50",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match a coordinate format (X,Y) with grouped numbers.",
+      "canonicalSolution": "^\\((\\d+),(\\d+)\\)$",
+      "testCases": [{ "text": "(10,20)", "shouldMatch": true }, { "text": "10,20", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c51",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 4 hex characters grouped in brackets.",
+      "canonicalSolution": "^\\[(\\w{4})\\]$",
+      "testCases": [{ "text": "[A1F9]", "shouldMatch": true }, { "text": "[A1F]", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c52",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped word followed by one or more spaces and digits.",
+      "canonicalSolution": "^(\\w+)\\s+(\\d+)$",
+      "testCases": [{ "text": "Chapter 4", "shouldMatch": true }, { "text": "Chapter Four", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c53",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 3 digits grouped inside curly braces {XXX}.",
+      "canonicalSolution": "^\\{(\\d{3})\\}$",
+      "testCases": [{ "text": "{101}", "shouldMatch": true }, { "text": "{10}", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c54",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with optional 'A' or 'B' grouped badge.",
+      "canonicalSolution": "^(A|B)?\\d{3}$",
+      "testCases": [{ "text": "A123", "shouldMatch": true }, { "text": "123", "shouldMatch": true }, { "text": "C123", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c55",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match email prefix before @ grouped.",
+      "canonicalSolution": "^(\\w+)@\\w+\\.\\w+$",
+      "testCases": [{ "text": "user@test.com", "shouldMatch": true }, { "text": "@test.com", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c56",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string ending with grouped '.js' or '.ts'.",
+      "canonicalSolution": "\\.(js|ts)$",
+      "testCases": [{ "text": "app.ts", "shouldMatch": true }, { "text": "app.py", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c57",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 'NORTH', 'SOUTH', 'EAST', or 'WEST' in a group.",
+      "canonicalSolution": "^(NORTH|SOUTH|EAST|WEST)$",
+      "testCases": [{ "text": "NORTH", "shouldMatch": true }, { "text": "UP", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c58",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match repeating pair of (digit, word) twice.",
+      "canonicalSolution": "^(\\d\\w){2}$",
+      "testCases": [{ "text": "1a2b", "shouldMatch": true }, { "text": "1a2", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c59",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped product code 3 letters, dash, 3 digits.",
+      "canonicalSolution": "^(\\w{3})-(\\d{3})$",
+      "testCases": [{ "text": "PRD-502", "shouldMatch": true }, { "text": "PR-502", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c60",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped word followed by mandatory dot and 2 digits.",
+      "canonicalSolution": "^(\\w+)\\.\\d{2}$",
+      "testCases": [{ "text": "item.99", "shouldMatch": true }, { "text": "item.9", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c61",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with 'ID:' followed by 6 grouped digits.",
+      "canonicalSolution": "^ID:(\\d{6})$",
+      "testCases": [{ "text": "ID:123456", "shouldMatch": true }, { "text": "ID:12345", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c62",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match grouped protocol name (TCP or UDP) and port integer.",
+      "canonicalSolution": "^(TCP|UDP):\\d+$",
+      "testCases": [{ "text": "TCP:80", "shouldMatch": true }, { "text": "HTTP:80", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c63",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 3 digits grouped inside single quotes.",
+      "canonicalSolution": "^'(\\d{3})'$",
+      "testCases": [{ "text": "'789'", "shouldMatch": true }, { "text": "789", "shouldMatch": false }]
+    },
+    {
+      "id": "m4_c64",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match 2 grouped word tokens enclosed in standard brackets.",
+      "canonicalSolution": "^\\[(\\w+)\\s+(\\w+)\\]$",
+      "testCases": [{ "text": "[John Doe]", "shouldMatch": true }, { "text": "[John]", "shouldMatch": false }]
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "id": "module-3",
+  "courseId": "regex",
+  "order": 3,
+  "title": "Anchors & Concept Stacking",
+  "description": "Enforce structural position boundaries (^, $, \\b) combined with M1 classes and M2 quantifiers.",
+  "primer": {
+    "syntaxToken": "^, $, \\b",
+    "definition": "^ asserts the start of string, $ asserts the end of string, and \\b asserts a word boundary position.",
+    "goldenRule": "Anchors do not consume any characters—they strictly enforce location boundaries."
+  },
+  "cards": [
+    {
+      "id": "m3_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Assert the start of a string using ^.",
+      "ghostTemplate": "^\\w",
+      "canonicalSolution": "^\\w",
+      "testCases": [{ "text": "code", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Assert the end of a string using $.",
+      "ghostTemplate": "\\d$",
+      "canonicalSolution": "\\d$",
+      "testCases": [{ "text": "order9", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Assert a word boundary using \\b.",
+      "ghostTemplate": "\\bcat",
+      "canonicalSolution": "\\bcat",
+      "testCases": [{ "text": "cat", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c4",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Enforce match from start to end using ^ and $.",
+      "ghostTemplate": "^\\d+$",
+      "canonicalSolution": "^\\d+$",
+      "testCases": [{ "text": "9982", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c5",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Assert start boundary before word character.",
+      "ghostTemplate": "^\\b\\w",
+      "canonicalSolution": "^\\b\\w",
+      "testCases": [{ "text": "start", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c6",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Assert word boundary before end of string.",
+      "ghostTemplate": "\\w\\b$",
+      "canonicalSolution": "\\w\\b$",
+      "testCases": [{ "text": "finish", "shouldMatch": true }]
+    },
+    {
+      "id": "m3_c7",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Ensure entire string contains ONLY digits.",
+      "ghostTemplate": "^\\d+$",
+      "canonicalSolution": "^\\d+$",
+      "testCases": [{ "text": "12345", "shouldMatch": true }, { "text": "123a45", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c8",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Ensure entire string contains ONLY word characters.",
+      "ghostTemplate": "^\\w+$",
+      "canonicalSolution": "^\\w+$",
+      "testCases": [{ "text": "user_name", "shouldMatch": true }, { "text": "user-name", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c9",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a string consisting strictly of 2 to 4 word characters.",
+      "ghostTemplate": "^\\w{2,4}$",
+      "canonicalSolution": "^\\w{2,4}$",
+      "testCases": [{ "text": "code", "shouldMatch": true }, { "text": "a", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c10",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with one or more digits.",
+      "ghostTemplate": "^\\d+",
+      "canonicalSolution": "^\\d+",
+      "testCases": [{ "text": "100 apples", "shouldMatch": true }, { "text": "apples 100", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string ending with one or more digits.",
+      "ghostTemplate": "\\d+$",
+      "canonicalSolution": "\\d+$",
+      "testCases": [{ "text": "Item 42", "shouldMatch": true }, { "text": "Item 42a", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with a letter or word character.",
+      "ghostTemplate": "^\\w",
+      "canonicalSolution": "^\\w",
+      "testCases": [{ "text": "hello", "shouldMatch": true }, { "text": "#hello", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string ending with one or more word characters.",
+      "ghostTemplate": "\\w+$",
+      "canonicalSolution": "\\w+$",
+      "testCases": [{ "text": "status: ok", "shouldMatch": true }, { "text": "status: ok!", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c14",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string consisting strictly of a 5-digit ZIP code.",
+      "ghostTemplate": "^\\d{5}$",
+      "canonicalSolution": "^\\d{5}$",
+      "testCases": [{ "text": "90210", "shouldMatch": true }, { "text": "902101", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c15",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match standalone word 'cat' using word boundaries.",
+      "ghostTemplate": "\\bcat\\b",
+      "canonicalSolution": "\\bcat\\b",
+      "testCases": [{ "text": "the cat sat", "shouldMatch": true }, { "text": "category", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c16",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with 'LOG:' followed by word characters.",
+      "ghostTemplate": "^LOG:\\w+",
+      "canonicalSolution": "^LOG:\\w+",
+      "testCases": [{ "text": "LOG:Init", "shouldMatch": true }, { "text": "ERR LOG:Init", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c17",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string ending with 'END'.",
+      "ghostTemplate": "END$",
+      "canonicalSolution": "END$",
+      "testCases": [{ "text": "THE END", "shouldMatch": true }, { "text": "ENDING", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c18",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match standalone word 'code'.",
+      "ghostTemplate": "\\bcode\\b",
+      "canonicalSolution": "\\bcode\\b",
+      "testCases": [{ "text": "write code now", "shouldMatch": true }, { "text": "codex", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c19",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string consisting exclusively of whitespace spaces.",
+      "ghostTemplate": "^\\s+$",
+      "canonicalSolution": "^\\s+$",
+      "testCases": [{ "text": "   ", "shouldMatch": true }, { "text": " a ", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c20",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure string contains ONLY 3 to 6 digits.",
+      "canonicalSolution": "^\\d{3,6}$",
+      "testCases": [{ "text": "1234", "shouldMatch": true }, { "text": "12", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c21",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure string contains ONLY non-digit characters.",
+      "canonicalSolution": "^\\D+$",
+      "testCases": [{ "text": "hello", "shouldMatch": true }, { "text": "hello5", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c22",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with exactly 3 digits.",
+      "canonicalSolution": "^\\d{3}",
+      "testCases": [{ "text": "555-1234", "shouldMatch": true }, { "text": "55-1234", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c23",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string ending with exactly 4 digits.",
+      "canonicalSolution": "\\d{4}$",
+      "testCases": [{ "text": "card-9821", "shouldMatch": true }, { "text": "card-982", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c24",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with 'USER_' followed by one or more digits.",
+      "canonicalSolution": "^USER_\\d+",
+      "testCases": [{ "text": "USER_102", "shouldMatch": true }, { "text": "GUEST_102", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c25",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match any standalone 3-letter word.",
+      "canonicalSolution": "\\b\\w{3}\\b",
+      "testCases": [{ "text": "the cat sat", "shouldMatch": true }, { "text": "four", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c26",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure string starts with digit and consists strictly of word characters.",
+      "canonicalSolution": "^\\d\\w+$",
+      "testCases": [{ "text": "1test", "shouldMatch": true }, { "text": "test1", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c27",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure string consists strictly of 3 to 8 word characters.",
+      "canonicalSolution": "^\\w{3,8}$",
+      "testCases": [{ "text": "admin", "shouldMatch": true }, { "text": "hi", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c28",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match standalone word 'dev'.",
+      "canonicalSolution": "\\bdev\\b",
+      "testCases": [{ "text": "senior dev lead", "shouldMatch": true }, { "text": "developer", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c29",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure entire string is non-whitespace characters.",
+      "canonicalSolution": "^\\S+$",
+      "testCases": [{ "text": "no_spaces_here", "shouldMatch": true }, { "text": "has space", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c30",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string starting with one or more whitespace spaces.",
+      "canonicalSolution": "^\\s+",
+      "testCases": [{ "text": "   indented", "shouldMatch": true }, { "text": "not_indented", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c31",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string ending with one or more whitespace spaces.",
+      "canonicalSolution": "\\s+$",
+      "testCases": [{ "text": "trailing   ", "shouldMatch": true }, { "text": "no_trailing", "shouldMatch": false }]
+    },
+    {
+      "id": "m3_c32",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Ensure entire string contains strictly one or more digits or letters.",
+      "canonicalSolution": "^\\w+$",
+      "testCases": [{ "text": "Valid123", "shouldMatch": true }, { "text": "Invalid!", "shouldMatch": false }]
+    }
+  ]
+}

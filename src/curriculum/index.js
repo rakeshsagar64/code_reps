@@ -1,4 +1,13 @@
-import { regexCourse } from './courses/regex/course.js';
+import regexCourseMeta from './courses/regex/course.json';
+import regexM1 from './courses/regex/module-1.json';
+import regexM2 from './courses/regex/module-2.json';
+import regexM3 from './courses/regex/module-3.json';
+import regexM4 from './courses/regex/module-4.json';
+
+export const regexCourse = {
+  ...regexCourseMeta,
+  modules: [regexM1, regexM2, regexM3, regexM4]
+};
 
 export const courses = {
   regex: regexCourse

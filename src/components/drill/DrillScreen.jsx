@@ -1,45 +1,61 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle2, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { validators } from '../../utils/validators';
 
-export function DrillScreen({ module, onClose, onCompleteSession }) {
-  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+export function DrillScreen({ module, validatorType = 'regex', onClose, onCompleteSession }) {
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [userPattern, setUserPattern] = useState('');
 
-  const prompts = module?.prompts || [];
-  const currentPrompt = prompts[currentPromptIndex] || {
-    instruction: "Match all digits in the target string.",
-    targetRegex: "\\d+",
-    testCases: [
-      { input: "Order #1234", shouldMatch: true },
-      { input: "No digits here", shouldMatch: false }
-    ]
-  };
+  const cards = module?.cards || [];
+  const currentCard = cards[currentCardIndex];
 
-  // Evaluate test cases against user pattern
+  // Individual test case status for UI highlight cards
   const evaluateTestCases = () => {
-    if (!userPattern) return currentPrompt.testCases.map(tc => ({ ...tc, passed: false }));
+    if (!currentCard || !userPattern) {
+      return (currentCard?.testCases || []).map((tc) => ({ ...tc, passed: false }));
+    }
+
+    if (validatorType === 'exact-string') {
+      const isExactMatch = validators['exact-string'](userPattern, currentCard);
+      return (currentCard?.testCases || []).map((tc) => ({ ...tc, passed: isExactMatch }));
+    }
+
     try {
-      const regex = new RegExp(userPattern);
-      return currentPrompt.testCases.map(tc => ({
+      const rx = new RegExp(userPattern);
+      return (currentCard.testCases || []).map((tc) => ({
         ...tc,
-        passed: regex.test(tc.input) === tc.shouldMatch
+        passed: rx.test(tc.text) === tc.shouldMatch,
       }));
-    } catch (e) {
-      return currentPrompt.testCases.map(tc => ({ ...tc, passed: false }));
+    } catch {
+      return (currentCard?.testCases || []).map((tc) => ({ ...tc, passed: false }));
     }
   };
 
   const testResults = evaluateTestCases();
-  const allPassed = testResults.length > 0 && testResults.every(tc => tc.passed);
+
+  // Validate whole card completion using the validator strategy engine
+  const validate = validators[validatorType] || validators.regex;
+  const allPassed = currentCard ? validate(userPattern, currentCard) : false;
 
   const handleNext = () => {
-    if (currentPromptIndex < prompts.length - 1) {
-      setCurrentPromptIndex(prev => prev + 1);
+    if (currentCardIndex < cards.length - 1) {
+      setCurrentCardIndex((prev) => prev + 1);
       setUserPattern('');
     } else {
       onCompleteSession();
     }
   };
+
+  if (!currentCard) {
+    return (
+      <div className="drill-container p-8 text-center text-slate-300">
+        <p>No cards found for this module.</p>
+        <button onClick={onClose} className="mt-4 px-4 py-2 bg-slate-800 rounded-md text-white">
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="drill-container">
@@ -57,7 +73,7 @@ export function DrillScreen({ module, onClose, onCompleteSession }) {
           </div>
         </div>
         <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#cbd5e1' }}>
-          Prompt {currentPromptIndex + 1} / {prompts.length || 1}
+          Card {currentCardIndex + 1} / {cards.length}
         </div>
       </div>
 
@@ -66,26 +82,30 @@ export function DrillScreen({ module, onClose, onCompleteSession }) {
         <div className="prompt-header">
           <span className="primer-label">Challenge</span>
           <span style={{ fontSize: '12px', color: '#94a3b8', fontFamily: 'monospace' }}>
-            Syntax: <code className="code-badge">{module?.primer?.syntaxToken || '\\d'}</code>
+            Type: <code className="code-badge">{currentCard.type}</code>
           </span>
         </div>
-        <p className="prompt-instruction">{currentPrompt.instruction}</p>
+        <p className="prompt-instruction">{currentCard.prompt}</p>
       </div>
 
-      {/* Regex Editor Box */}
+      {/* Editor Box */}
       <div className="editor-container">
-        <div className="editor-label">Your Regex Pattern</div>
+        <div className="editor-label">Your Solution</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '20px', fontWeight: 700 }}>/</span>
+          {validatorType === 'regex' && (
+            <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '20px', fontWeight: 700 }}>/</span>
+          )}
           <input
             type="text"
             value={userPattern}
             onChange={(e) => setUserPattern(e.target.value)}
-            placeholder="Type regex here..."
+            placeholder={currentCard.ghostTemplate ? `e.g. ${currentCard.ghostTemplate}` : 'Type here...'}
             className="editor-input"
             autoFocus
           />
-          <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '20px', fontWeight: 700 }}>/g</span>
+          {validatorType === 'regex' && (
+            <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '20px', fontWeight: 700 }}>/g</span>
+          )}
         </div>
       </div>
 
@@ -94,7 +114,7 @@ export function DrillScreen({ module, onClose, onCompleteSession }) {
         <div className="test-section-title">Test Cases</div>
         {testResults.map((tc, index) => (
           <div key={index} className={`test-case-card ${tc.passed ? 'passed' : 'failed'}`}>
-            <span>{tc.input}</span>
+            <span>{tc.text}</span>
             <span className={`test-status-badge ${tc.passed ? 'passed' : 'failed'}`}>
               {tc.passed ? 'PASS' : 'FAIL'}
             </span>
@@ -109,10 +129,10 @@ export function DrillScreen({ module, onClose, onCompleteSession }) {
         className="btn-action"
         style={{
           opacity: allPassed ? 1 : 0.4,
-          cursor: allPassed ? 'pointer' : 'not-allowed'
+          cursor: allPassed ? 'pointer' : 'not-allowed',
         }}
       >
-        {currentPromptIndex < prompts.length - 1 ? 'Next Challenge' : 'Complete Drill'}
+        {currentCardIndex < cards.length - 1 ? 'Next Challenge' : 'Complete Drill'}
         <ArrowRight size={16} />
       </button>
     </div>

@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { regexCourse } from '../../curriculum/courses/regex/course.js';
+import { regexCourse } from '../../curriculum';
 import { ModuleCard } from './ModuleCard.jsx';
 import { LessonPrimerScreen } from '../lesson/LessonPrimerScreen.jsx';
-import { Flame, Target, Zap } from 'lucide-react';
 
 export function DashboardScreen({ onLaunchDrill }) {
   const [selectedModule, setSelectedModule] = useState(null);
 
-  // Mock progress state (Will hook into Zustand store next)
+  // Mock progress state (Ensure keys match the "id" field in your JSONs, e.g., 'module-1')
   const mockProgress = {
-    regex_m1: 100,
-    regex_m2: 0,
+    'module-1': 100,
+    'module-2': 0,
   };
 
   return (
@@ -18,21 +17,20 @@ export function DashboardScreen({ onLaunchDrill }) {
       <div className="mx-auto max-w-2xl space-y-8">
         {/* Header Stats */}
         <header className="app-header">
-              <div className="brand">
-                <span className="logo-icon">CR</span>
-                <div>
-                  <h1 className="brand-title">CodeReps</h1>
-                  <div className="brand-subtitle">Regex Fundamentals</div>
-                </div>
-              </div>
-            </header>
+          <div className="brand">
+            <span className="logo-icon">CR</span>
+            <div>
+              <h1 className="brand-title">CodeReps</h1>
+              <div className="brand-subtitle">Regex Fundamentals</div>
+            </div>
+          </div>
+        </header>
 
         {/* Section Title */}
-        <div>
-          <h2 className="text-xl font-bold text-slate-100">Modules</h2>
-          <p className="text-sm text-slate-400">
-            Complete modules to build regex muscle memory.
-          </p>
+        <div className="dashboard-section-header">
+          <span className="section-badge">// CURRICULUM</span>
+          <h2 className="section-title">Modules</h2>
+          <p className="section-desc">Complete modules to build regex muscle memory.</p>
         </div>
 
         {/* Module Card Grid */}

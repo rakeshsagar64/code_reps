@@ -358,3 +358,38 @@ body {
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.4);
 }
+
+/* --- Dashboard Section Header Styling --- */
+.dashboard-section-header {
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  border-left: 4px solid #10b981; /* Emerald green accent indicator */
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.section-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: monospace;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.section-desc {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
