@@ -1,7 +1,7 @@
 {
-  "name": "timer_app",
+  "name": "code_reps",
   "version": "0.1.0",
-  "homepage": "https://rakeshsagar64.github.io/timerapp/",
+  "homepage": "https://rakeshsagar64.github.io/code_reps/",
   "private": false,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
