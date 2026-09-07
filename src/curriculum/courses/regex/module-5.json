@@ -1,0 +1,343 @@
+{
+  "id": "module-5",
+  "courseId": "regex",
+  "order": 5,
+  "title": "Capturing, Non-Capturing Groups & Backreferences",
+  "description": "Master memory management in regex. Extract targeted data with capturing groups, optimize performance with non-capturing groups, and match recurring structural patterns with backreferences.",
+  "primer": {
+    "syntaxToken": "(...), (?:...), \\1",
+    "definition": "Parentheses create capturing groups (...) that store matched substrings in memory. Adding ?: creates a non-capturing group (?:...) for grouping without memory overhead. Backreferences (\\1, \\2) allow you to re-match whatever was captured in a previous group.",
+    "goldenRule": "Use non-capturing groups (?:...) when you only need logical grouping (like alternation or quantifiers) without capturing data into memory. Use backreferences (\\1) when a future part of your pattern must match the exact same value captured earlier."
+  },
+  "cards": [
+    {
+      "id": "m5_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Create a capturing group for the word 'cat'.",
+      "ghostTemplate": "(cat)",
+      "canonicalSolution": "(cat)",
+      "testCases": [
+        { "text": "cat", "shouldMatch": true },
+        { "text": "dog", "shouldMatch": false },
+        { "text": "car", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Group 'cat' or 'dog' without capturing using (?:cat|dog).",
+      "ghostTemplate": "(?:cat|dog)",
+      "canonicalSolution": "(?:cat|dog)",
+      "testCases": [
+        { "text": "cat", "shouldMatch": true },
+        { "text": "dog", "shouldMatch": true },
+        { "text": "fox", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match a digit captured in group 1, followed by a space and the same digit using backreference \\1.",
+      "ghostTemplate": "(\\d) \\1",
+      "canonicalSolution": "(\\d) \\1",
+      "testCases": [
+        { "text": "5 5", "shouldMatch": true },
+        { "text": "9 9", "shouldMatch": true },
+        { "text": "5 6", "shouldMatch": false },
+        { "text": "a a", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c4",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match 'http' or 'https' using a non-capturing group, followed by '://'.",
+      "ghostTemplate": "^(?:http|https)://",
+      "canonicalSolution": "^(?:http|https)://",
+      "testCases": [
+        { "text": "https://", "shouldMatch": true },
+        { "text": "http://", "shouldMatch": true },
+        { "text": "ftp://", "shouldMatch": false },
+        { "text": "https:", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c5",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match 'abc' repeated one or more times strictly from start to end using a non-capturing group.",
+      "ghostTemplate": "^(?:abc)+$",
+      "canonicalSolution": "^(?:abc)+$",
+      "testCases": [
+        { "text": "abc", "shouldMatch": true },
+        { "text": "abcabc", "shouldMatch": true },
+        { "text": "ab", "shouldMatch": false },
+        { "text": "abcab", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c6",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match HTML-style tags like <b>text</b> ensuring opening and closing tag names match using \\1.",
+      "ghostTemplate": "<([a-z]+)>[^<]*</\\1>",
+      "canonicalSolution": "<([a-z]+)>[^<]*</\\1>",
+      "testCases": [
+        { "text": "<b>bold</b>", "shouldMatch": true },
+        { "text": "<i>italic</i>", "shouldMatch": true },
+        { "text": "<b>mismatch</i>", "shouldMatch": false },
+        { "text": "<div>content</span>", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c7",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a string wrapped in either matching single or double quotes strictly from start to end using backreference \\1.",
+      "ghostTemplate": "^(['\"])(.*?)\\1$",
+      "canonicalSolution": "^(['\"])(.*?)\\1$",
+      "testCases": [
+        { "text": "\"hello\"", "shouldMatch": true },
+        { "text": "'world'", "shouldMatch": true },
+        { "text": "\"mismatched'", "shouldMatch": false },
+        { "text": "'hello\"", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c8",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match consecutive duplicate words (e.g. 'the the') separated by whitespace using \\b and \\1.",
+      "ghostTemplate": "\\b(\\w+)\\s+\\1\\b",
+      "canonicalSolution": "\\b(\\w+)\\s+\\1\\b",
+      "testCases": [
+        { "text": "the the", "shouldMatch": true },
+        { "text": "is is", "shouldMatch": true },
+        { "text": "the clean text", "shouldMatch": false },
+        { "text": "there the", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c9",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match line starting with non-captured prefix 'ID:' followed by a captured 4-digit number strictly from start to end.",
+      "ghostTemplate": "^(?:ID:)(\\d{4})$",
+      "canonicalSolution": "^(?:ID:)(\\d{4})$",
+      "testCases": [
+        { "text": "ID:1234", "shouldMatch": true },
+        { "text": "ID:9999", "shouldMatch": true },
+        { "text": "CODE:1234", "shouldMatch": false },
+        { "text": "ID:123", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c10",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match repeating 2-character pattern 'abab' or '1a1a' using backreferences \\1 and \\2 strictly from start to end.",
+      "ghostTemplate": "^([a-z0-9])([a-z0-9])\\1\\2$",
+      "canonicalSolution": "^([a-z0-9])([a-z0-9])\\1\\2$",
+      "testCases": [
+        { "text": "abab", "shouldMatch": true },
+        { "text": "1a1a", "shouldMatch": true },
+        { "text": "abba", "shouldMatch": false },
+        { "text": "abcd", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match domain pattern with one or more non-captured subdomain blocks ending with standard TLD strictly from start to end.",
+      "ghostTemplate": "^(?:[a-z0-9-]+\\.)+[a-z]{2,}$",
+      "canonicalSolution": "^(?:[a-z0-9-]+\\.)+[a-z]{2,}$",
+      "testCases": [
+        { "text": "api.dev.example.com", "shouldMatch": true },
+        { "text": "google.com", "shouldMatch": true },
+        { "text": "localhost", "shouldMatch": false },
+        { "text": "http://example.com", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a 4-letter palindrome (e.g. 'abba' or 'noon') strictly from start to end using backreferences \\2 and \\1.",
+      "ghostTemplate": "^([a-z])([a-z])\\2\\1$",
+      "canonicalSolution": "^([a-z])([a-z])\\2\\1$",
+      "testCases": [
+        { "text": "abba", "shouldMatch": true },
+        { "text": "noon", "shouldMatch": true },
+        { "text": "abab", "shouldMatch": false },
+        { "text": "code", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match optional non-captured prefix 'v' followed by captured major digit and minor digit separated by dot strictly from start to end.",
+      "ghostTemplate": "^(?:v)?(\\d+)\\.(\\d+)$",
+      "canonicalSolution": "^(?:v)?(\\d+)\\.(\\d+)$",
+      "testCases": [
+        { "text": "v2.0", "shouldMatch": true },
+        { "text": "1.5", "shouldMatch": true },
+        { "text": "ver1.0", "shouldMatch": false },
+        { "text": "v2", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c14",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match two identical numbers separated by hyphen e.g. '100-100' strictly from start to end.",
+      "ghostTemplate": "^(\\d+)-\\1$",
+      "canonicalSolution": "^(\\d+)-\\1$",
+      "testCases": [
+        { "text": "100-100", "shouldMatch": true },
+        { "text": "42-42", "shouldMatch": true },
+        { "text": "100-200", "shouldMatch": false },
+        { "text": "100-1000", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c15",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match optional non-captured log level '[INFO]' or '[DEBUG]' followed by space and captured log message strictly from start to end.",
+      "ghostTemplate": "^(?:\\[INFO\\]|\\[DEBUG\\])?\\s*(.+)$",
+      "canonicalSolution": "^(?:\\[INFO\\]|\\[DEBUG\\])?\\s*(.+)$",
+      "testCases": [
+        { "text": "[INFO] Service started", "shouldMatch": true },
+        { "text": "Database connected", "shouldMatch": true },
+        { "text": "[WARN] Low memory", "shouldMatch": true },
+        { "text": "", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c16",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match 3 digits, a separator character (- or /), 3 digits, the exact same separator using \\2, and 4 digits strictly from start to end.",
+      "ghostTemplate": "^(\\d{3})([-\\/])(\\d{3})\\2(\\d{4})$",
+      "canonicalSolution": "^(\\d{3})([-\\/])(\\d{3})\\2(\\d{4})$",
+      "testCases": [
+        { "text": "123-456-7890", "shouldMatch": true },
+        { "text": "123/456/7890", "shouldMatch": true },
+        { "text": "123.456.7890", "shouldMatch": false },
+        { "text": "123-456/7890", "shouldMatch": false },
+        { "text": "1234567890", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c17",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match optional non-captured protocol 'http://' or 'https://' followed by captured domain name strictly from start to end.",
+      "canonicalSolution": "^(?:https?://)?([a-z0-9.-]+)$",
+      "testCases": [
+        { "text": "https://example.com", "shouldMatch": true },
+        { "text": "http://sub.domain.org", "shouldMatch": true },
+        { "text": "example.com", "shouldMatch": true },
+        { "text": "ftp://files.com", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c18",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Extract content between matching HTML tags strictly from start to end, capturing tag name in group 1 and tag body in group 2.",
+      "canonicalSolution": "^<([a-z1-6]+)>(.*?)</\\1>$",
+      "testCases": [
+        { "text": "<h1>Title</h1>", "shouldMatch": true },
+        { "text": "<p>Paragraph text</p>", "shouldMatch": true },
+        { "text": "<h1>Header</h2>", "shouldMatch": false },
+        { "text": "Plain text", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c19",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match string wrapped in matching single or double quotes, capturing quote mark in group 1 and inner text in group 2 strictly start to end.",
+      "canonicalSolution": "^(['\"])(.*?)\\1$",
+      "testCases": [
+        { "text": "\"config.json\"", "shouldMatch": true },
+        { "text": "'user_id'", "shouldMatch": true },
+        { "text": "\"mismatched'", "shouldMatch": false },
+        { "text": "unquoted", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c20",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match optional non-captured country code '+1' (with optional space) followed by captured phone number format XXX-XXX-XXXX strictly from start to end.",
+      "canonicalSolution": "^(?:\\+1\\s*)?(\\d{3}-\\d{3}-\\d{4})$",
+      "testCases": [
+        { "text": "+1 800-555-0199", "shouldMatch": true },
+        { "text": "800-555-0199", "shouldMatch": true },
+        { "text": "+1800-555-0199", "shouldMatch": true },
+        { "text": "+44 800-555-0199", "shouldMatch": false },
+        { "text": "8005550199", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c21",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Find duplicate adjacent words separated by space anywhere in text using \\b and \\1.",
+      "canonicalSolution": "\\b(\\w+)\\s+\\1\\b",
+      "testCases": [
+        { "text": "This is is a test", "shouldMatch": true },
+        { "text": "do do it", "shouldMatch": true },
+        { "text": "This is a test", "shouldMatch": false },
+        { "text": "cat catalog", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c22",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match a numeric CSS dimension strictly from start to end, capturing scalar number while grouping unit 'px' or 'em' non-capturingly.",
+      "canonicalSolution": "^(\\d+(?:\\.\\d+)?)(?:px|em)$",
+      "testCases": [
+        { "text": "16px", "shouldMatch": true },
+        { "text": "1.5em", "shouldMatch": true },
+        { "text": "0px", "shouldMatch": true },
+        { "text": "16rem", "shouldMatch": false },
+        { "text": "px", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c23",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match date YYYY-MM-DD or YYYY/MM/DD strictly from start to end, ensuring the separator between year/month and month/day is identical using \\2.",
+      "canonicalSolution": "^(\\d{4})([-\\/])(\\d{2})\\2(\\d{2})$",
+      "testCases": [
+        { "text": "2026-09-07", "shouldMatch": true },
+        { "text": "2026/09/07", "shouldMatch": true },
+        { "text": "2026-09/07", "shouldMatch": false },
+        { "text": "2026.09-07", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c24",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match log line starting with non-captured timestamp '[YYYY-MM-DD]', captured log level '(INFO|ERROR)', and captured message body strictly from start to end.",
+      "canonicalSolution": "^(?:\\[\\d{4}-\\d{2}-\\d{2}\\])\\s+(INFO|ERROR):\\s+(.+)$",
+      "testCases": [
+        { "text": "[2026-09-07] INFO: Task completed successfully", "shouldMatch": true },
+        { "text": "[2026-01-01] ERROR: Connection timed out", "shouldMatch": true },
+        { "text": "[2026-09-07] WARN: Disk space low", "shouldMatch": false },
+        { "text": "INFO: Missing timestamp bracket", "shouldMatch": false }
+      ]
+    }
+  ]
+}

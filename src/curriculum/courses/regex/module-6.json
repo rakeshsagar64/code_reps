@@ -1,0 +1,335 @@
+{
+  "id": "module-6",
+  "courseId": "regex",
+  "order": 6,
+  "title": "Lookarounds (Lookahead & Lookbehind)",
+  "description": "Master zero-width assertions. Validate surrounding context with lookaheads and lookbehinds without consuming characters or including them in the match result.",
+  "primer": {
+    "syntaxToken": "(?=...), (?!...), (?<=...), (?<!...)",
+    "definition": "Lookarounds inspect the text before or after the current position without 'consuming' characters into the match result. Positive lookahead (?=) and positive lookbehind (?<=) check for required presence; negative lookahead (?!) and negative lookbehind (?<!) check for required absence.",
+    "goldenRule": "Lookarounds are zero-width assertions: they assert conditions about adjacent text without advancing the regex matching engine's character index."
+  },
+  "cards": [
+    {
+      "id": "m6_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'foo' only if it is immediately followed by 'bar' using positive lookahead (?=...).",
+      "ghostTemplate": "foo(?=bar)",
+      "canonicalSolution": "foo(?=bar)",
+      "testCases": [
+        { "text": "foobar", "shouldMatch": true },
+        { "text": "foobaz", "shouldMatch": false },
+        { "text": "foo", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'foo' only if it is NOT followed by 'bar' using negative lookahead (?!...).",
+      "ghostTemplate": "foo(?!bar)",
+      "canonicalSolution": "foo(?!bar)",
+      "testCases": [
+        { "text": "foobaz", "shouldMatch": true },
+        { "text": "foo", "shouldMatch": true },
+        { "text": "foobar", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'bar' only if it is immediately preceded by 'foo' using positive lookbehind (?<=...).",
+      "ghostTemplate": "(?<=foo)bar",
+      "canonicalSolution": "(?<=foo)bar",
+      "testCases": [
+        { "text": "foobar", "shouldMatch": true },
+        { "text": "bazbar", "shouldMatch": false },
+        { "text": "bar", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c4",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match 'bar' only if it is NOT preceded by 'foo' using negative lookbehind (?<!...).",
+      "ghostTemplate": "(?<!foo)bar",
+      "canonicalSolution": "(?<!foo)bar",
+      "testCases": [
+        { "text": "bazbar", "shouldMatch": true },
+        { "text": "bar", "shouldMatch": true },
+        { "text": "foobar", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c5",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match lowercase letters only if followed by one or more digits strictly from start to end.",
+      "ghostTemplate": "^[a-z]+(?=\\d+)$",
+      "canonicalSolution": "^[a-z]+(?=\\d+)$",
+      "testCases": [
+        { "text": "item123", "shouldMatch": true },
+        { "text": "user1", "shouldMatch": true },
+        { "text": "item", "shouldMatch": false },
+        { "text": "123item", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c6",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match digits only if preceded by a dollar sign '$'.",
+      "ghostTemplate": "(?<=\\$)\\d+",
+      "canonicalSolution": "(?<=\\$)\\d+",
+      "testCases": [
+        { "text": "$100", "shouldMatch": true },
+        { "text": "$45", "shouldMatch": true },
+        { "text": "100", "shouldMatch": false },
+        { "text": "€100", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c7",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match price digits (with optional two decimal places) preceded by '$' without including '$' in match.",
+      "ghostTemplate": "(?<=\\$)\\d+(?:\\.\\d{2})?",
+      "canonicalSolution": "(?<=\\$)\\d+(?:\\.\\d{2})?",
+      "testCases": [
+        { "text": "$49.99", "shouldMatch": true },
+        { "text": "$100", "shouldMatch": true },
+        { "text": "49.99", "shouldMatch": false },
+        { "text": "EUR 49.99", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c8",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match word key at line start only if followed by optional spaces and a colon.",
+      "ghostTemplate": "^\\w+(?=\\s*:)",
+      "canonicalSolution": "^\\w+(?=\\s*:)",
+      "testCases": [
+        { "text": "username:", "shouldMatch": true },
+        { "text": "status :", "shouldMatch": true },
+        { "text": "no_colon_here", "shouldMatch": false },
+        { "text": ":invalid_start", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c9",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match integer digits strictly from start to end only if NOT ending with unit 'px'.",
+      "ghostTemplate": "^\\d+(?!px$)",
+      "canonicalSolution": "^\\d+(?!px$)",
+      "testCases": [
+        { "text": "100em", "shouldMatch": true },
+        { "text": "100%", "shouldMatch": true },
+        { "text": "100px", "shouldMatch": false },
+        { "text": "px100", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c10",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match word 'admin' strictly at word boundary only if NOT preceded by 'super_'.",
+      "ghostTemplate": "(?<!super_)\\badmin\\b",
+      "canonicalSolution": "(?<!super_)\\badmin\\b",
+      "testCases": [
+        { "text": "sys_admin", "shouldMatch": true },
+        { "text": "admin", "shouldMatch": true },
+        { "text": "super_admin", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Extract string content inside angle brackets '<' and '>' using lookbehind and lookahead.",
+      "ghostTemplate": "(?<=<)[^>]+(?=>)",
+      "canonicalSolution": "(?<=<)[^>]+(?=>)",
+      "testCases": [
+        { "text": "<div>", "shouldMatch": true },
+        { "text": "<p>", "shouldMatch": true },
+        { "text": "no brackets", "shouldMatch": false },
+        { "text": "<unclosed", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Validate full string contains at least one digit using positive lookahead strictly from start to end.",
+      "ghostTemplate": "^(?=.*\\d).+$",
+      "canonicalSolution": "^(?=.*\\d).+$",
+      "testCases": [
+        { "text": "pass123", "shouldMatch": true },
+        { "text": "12345", "shouldMatch": true },
+        { "text": "secret", "shouldMatch": false },
+        { "text": "abc!@#", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Validate full string contains at least one uppercase letter AND at least one digit strictly start to end.",
+      "ghostTemplate": "^(?=.*[A-Z])(?=.*\\d).+$",
+      "canonicalSolution": "^(?=.*[A-Z])(?=.*\\d).+$",
+      "testCases": [
+        { "text": "Pass123", "shouldMatch": true },
+        { "text": "123A", "shouldMatch": true },
+        { "text": "password123", "shouldMatch": false },
+        { "text": "PASSWORD", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c14",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match filename strictly from start to end that does NOT end with executable extension '.exe' or '.bat'.",
+      "ghostTemplate": "^.+\\.(?!(?:exe|bat)$)[a-z0-9]+$",
+      "canonicalSolution": "^.+\\.(?!(?:exe|bat)$)[a-z0-9]+$",
+      "testCases": [
+        { "text": "document.pdf", "shouldMatch": true },
+        { "text": "image.png", "shouldMatch": true },
+        { "text": "script.exe", "shouldMatch": false },
+        { "text": "file.bat", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c15",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match unescaped double quotes (a double quote NOT preceded by a backslash '\\').",
+      "ghostTemplate": "(?<!\\\\)\"",
+      "canonicalSolution": "(?<!\\\\)\"",
+      "testCases": [
+        { "text": "hello \"world\"", "shouldMatch": true },
+        { "text": "\"start\"", "shouldMatch": true },
+        { "text": "hello \\\"world\\\"", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c16",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match digit that is directly followed by multiples of 3 digits (used for comma separation in numbers).",
+      "ghostTemplate": "\\d(?=(\\d{3})+(?!\\d))",
+      "canonicalSolution": "\\d(?=(\\d{3})+(?!\\d))",
+      "testCases": [
+        { "text": "1000", "shouldMatch": true },
+        { "text": "1000000", "shouldMatch": true },
+        { "text": "100", "shouldMatch": false },
+        { "text": "10", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c17",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Extract value of query parameter 'token=' from URL string using positive lookbehind.",
+      "canonicalSolution": "(?<=token=)[^&]+",
+      "testCases": [
+        { "text": "https://api.com?token=xyz123&user=4", "shouldMatch": true },
+        { "text": "https://api.com?auth=abc&token=secret99", "shouldMatch": true },
+        { "text": "https://api.com?user=4", "shouldMatch": false },
+        { "text": "https://api.com?token=", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c18",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Extract content strictly inside double quotes without including surrounding quotes using lookaround bounds.",
+      "canonicalSolution": "(?<=\")[^\"]*(?=\")",
+      "testCases": [
+        { "text": "\"hello\"", "shouldMatch": true },
+        { "text": "\"world\"", "shouldMatch": true },
+        { "text": "unquoted text", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c19",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Validate password: 8+ characters, at least 1 lowercase letter, 1 uppercase letter, and 1 digit strictly start to end.",
+      "canonicalSolution": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+      "testCases": [
+        { "text": "SecurePass123", "shouldMatch": true },
+        { "text": "StrongP1", "shouldMatch": true },
+        { "text": "pass123", "shouldMatch": false },
+        { "text": "SECUREPASS123", "shouldMatch": false },
+        { "text": "Short1A", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c20",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match email address strictly from start to end, rejecting disposable domains '@temp.com' or '@disposable.org' via negative lookahead.",
+      "canonicalSolution": "^[a-zA-Z0-9._%+-]+@(?!temp\\.com|disposable\\.org)[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      "testCases": [
+        { "text": "user@gmail.com", "shouldMatch": true },
+        { "text": "admin@company.co.uk", "shouldMatch": true },
+        { "text": "user@temp.com", "shouldMatch": false },
+        { "text": "bot@disposable.org", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c21",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Extract port digits preceded by 'localhost:' or '127.0.0.1:' using positive lookbehind.",
+      "canonicalSolution": "(?<=localhost:|127\\.0\\.0\\.1:)\\d+",
+      "testCases": [
+        { "text": "http://localhost:8080", "shouldMatch": true },
+        { "text": "http://127.0.0.1:3000", "shouldMatch": true },
+        { "text": "http://example.com:8080", "shouldMatch": false },
+        { "text": "http://localhost", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c22",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match word characters only if NOT preceded by '@' (to ignore social media mentions).",
+      "canonicalSolution": "(?<!@)\\b[a-z]+\\b",
+      "testCases": [
+        { "text": "hello", "shouldMatch": true },
+        { "text": "world", "shouldMatch": true },
+        { "text": "@user", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c23",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Extract 6-character hex color code digits preceded by '#' without including '#' in the match result.",
+      "canonicalSolution": "(?<=#)[a-fA-F0-9]{6}\\b",
+      "testCases": [
+        { "text": "#ff0000", "shouldMatch": true },
+        { "text": "#1a2b3c", "shouldMatch": true },
+        { "text": "ff0000", "shouldMatch": false },
+        { "text": "#xyz123", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m6_c24",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match API path starting with '/api/' but NOT matching deprecated versions '/v1/' or '/v2/' using negative lookahead.",
+      "canonicalSolution": "^/api/(?!(?:v1|v2)/)[a-z0-9/-]+$",
+      "testCases": [
+        { "text": "/api/v3/users", "shouldMatch": true },
+        { "text": "/api/latest/data", "shouldMatch": true },
+        { "text": "/api/v1/users", "shouldMatch": false },
+        { "text": "/api/v2/orders", "shouldMatch": false }
+      ]
+    }
+  ]
+}

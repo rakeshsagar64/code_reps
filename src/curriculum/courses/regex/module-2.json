@@ -14,10 +14,16 @@
       "id": "m2_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match one or more of any token using +.",
+      "prompt": "Match one or more digits using +.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
-      "testCases": [{ "text": "123", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "123", "shouldMatch": true, "description": "Sequence of digits" },
+        { "text": "abc", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+, ., .*)" },
+        { "text": "   ", "shouldMatch": false, "description": "Spaces only (fails \\s+, .)" }
+      ]
     },
     {
       "id": "m2_c2",
@@ -26,7 +32,12 @@
       "prompt": "Match zero or more word characters using *.",
       "ghostTemplate": "\\w*",
       "canonicalSolution": "\\w*",
-      "testCases": [{ "text": "code", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "code", "shouldMatch": true, "description": "Word characters" },
+        { "text": "%#$", "shouldMatch": true, "description": "Zero word chars matches empty position (forces * over + or \\w)" }
+      ]
     },
     {
       "id": "m2_c3",
@@ -35,7 +46,13 @@
       "prompt": "Match exactly 3 digits using {3}.",
       "ghostTemplate": "\\d{3}",
       "canonicalSolution": "\\d{3}",
-      "testCases": [{ "text": "456", "shouldMatch": true }, { "text": "12", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "456", "shouldMatch": true, "description": "Exactly 3 digits" },
+        { "text": "12", "shouldMatch": false, "description": "Only 2 digits (fails \\d, \\d+, \\d{2})" },
+        { "text": "abc", "shouldMatch": false, "description": "Letters only (fails \\w+, .*)" }
+      ]
     },
     {
       "id": "m2_c4",
@@ -44,7 +61,13 @@
       "prompt": "Match 2 to 4 word characters using {2,4}.",
       "ghostTemplate": "\\w{2,4}",
       "canonicalSolution": "\\w{2,4}",
-      "testCases": [{ "text": "item", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "item", "shouldMatch": true, "description": "4 word characters" },
+        { "text": "a", "shouldMatch": false, "description": "1 character (fails \\w, \\w+, \\w*)" },
+        { "text": "!@#", "shouldMatch": false, "description": "Symbols only (fails .*, \\S+)" }
+      ]
     },
     {
       "id": "m2_c5",
@@ -53,7 +76,12 @@
       "prompt": "Match a sequence of one or more digits.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
-      "testCases": [{ "text": "Order #48291", "shouldMatch": true }, { "text": "No numbers", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "Order #48291", "shouldMatch": true, "description": "Contains digits" },
+        { "text": "No numbers", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+, \\s+, .*)" }
+      ]
     },
     {
       "id": "m2_c6",
@@ -62,16 +90,27 @@
       "prompt": "Match a sequence of one or more word characters.",
       "ghostTemplate": "\\w+",
       "canonicalSolution": "\\w+",
-      "testCases": [{ "text": "regex_101", "shouldMatch": true }, { "text": "!@#$", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "regex_101", "shouldMatch": true, "description": "Word characters" },
+        { "text": "!@#$", "shouldMatch": false, "description": "Symbols only (fails \\w*, .*, \\S+)" },
+        { "text": " ", "shouldMatch": false, "description": "Whitespace only (fails \\s*)" }
+      ]
     },
     {
       "id": "m2_c7",
       "type": "compound",
       "scaffold": "ghost",
-      "prompt": "Match one or more whitespace spaces.",
+      "prompt": "Match one or more whitespace characters.",
       "ghostTemplate": "\\s+",
       "canonicalSolution": "\\s+",
-      "testCases": [{ "text": "hello   world", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "hello   world", "shouldMatch": true, "description": "Multiple spaces" },
+        { "text": "helloworld", "shouldMatch": false, "description": "No spaces (fails \\s*, \\w+, \\D+, .*)" }
+      ]
     },
     {
       "id": "m2_c8",
@@ -80,7 +119,13 @@
       "prompt": "Match a 4-digit PIN or year.",
       "ghostTemplate": "\\d{4}",
       "canonicalSolution": "\\d{4}",
-      "testCases": [{ "text": "Year 2026", "shouldMatch": true }, { "text": "123", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "Year 2026", "shouldMatch": true, "description": "4-digit year" },
+        { "text": "123", "shouldMatch": false, "description": "3 digits only (fails \\d, \\d+)" },
+        { "text": "abcd", "shouldMatch": false, "description": "4 letters (fails \\w+, \\w{4})" }
+      ]
     },
     {
       "id": "m2_c9",
@@ -89,7 +134,13 @@
       "prompt": "Match word characters with length 3 or more.",
       "ghostTemplate": "\\w{3,}",
       "canonicalSolution": "\\w{3,}",
-      "testCases": [{ "text": "cat", "shouldMatch": true }, { "text": "in", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "cat", "shouldMatch": true, "description": "3 word characters" },
+        { "text": "in", "shouldMatch": false, "description": "2 word characters (fails \\w, \\w+, \\w*)" },
+        { "text": "--", "shouldMatch": false, "description": "Hyphens only (fails .*, \\S+)" }
+      ]
     },
     {
       "id": "m2_c10",
@@ -98,7 +149,12 @@
       "prompt": "Match zero or more spaces.",
       "ghostTemplate": "\\s*",
       "canonicalSolution": "\\s*",
-      "testCases": [{ "text": "test", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "  ", "shouldMatch": true, "description": "Spaces present" },
+        { "text": "test", "shouldMatch": true, "description": "0 spaces matches empty position (forces * over + or \\s)" }
+      ]
     },
     {
       "id": "m2_c11",
@@ -107,7 +163,12 @@
       "prompt": "Match one or more non-digit characters.",
       "ghostTemplate": "\\D+",
       "canonicalSolution": "\\D+",
-      "testCases": [{ "text": "ABC", "shouldMatch": true }, { "text": "123", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "ABC", "shouldMatch": true, "description": "Non-digits" },
+        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\D*, \\w+, .*, \\S+)" }
+      ]
     },
     {
       "id": "m2_c12",
@@ -116,7 +177,13 @@
       "prompt": "Match a 5-character word token.",
       "ghostTemplate": "\\w{5}",
       "canonicalSolution": "\\w{5}",
-      "testCases": [{ "text": "hello", "shouldMatch": true }, { "text": "code", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "hello", "shouldMatch": true, "description": "5 word characters" },
+        { "text": "code", "shouldMatch": false, "description": "4 characters only (fails \\w, \\w+)" },
+        { "text": "!!!!!", "shouldMatch": false, "description": "Symbols only (fails .{5}, \\S{5})" }
+      ]
     },
     {
       "id": "m2_c13",
@@ -125,7 +192,13 @@
       "prompt": "Match between 2 and 4 digits.",
       "ghostTemplate": "\\d{2,4}",
       "canonicalSolution": "\\d{2,4}",
-      "testCases": [{ "text": "123", "shouldMatch": true }, { "text": "1", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "123", "shouldMatch": true, "description": "3 digits" },
+        { "text": "1", "shouldMatch": false, "description": "1 digit (fails \\d, \\d+)" },
+        { "text": "abcd", "shouldMatch": false, "description": "Letters (fails \\w{2,4})" }
+      ]
     },
     {
       "id": "m2_c14",
@@ -133,7 +206,12 @@
       "scaffold": "blind",
       "prompt": "Match one or more digits in sequence.",
       "canonicalSolution": "\\d+",
-      "testCases": [{ "text": "ID 9982", "shouldMatch": true }, { "text": "none", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "ID 9982", "shouldMatch": true, "description": "Contains digit sequence" },
+        { "text": "none", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+)" }
+      ]
     },
     {
       "id": "m2_c15",
@@ -141,7 +219,13 @@
       "scaffold": "blind",
       "prompt": "Match exactly 3 word characters.",
       "canonicalSolution": "\\w{3}",
-      "testCases": [{ "text": "dev", "shouldMatch": true }, { "text": "hi", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "dev", "shouldMatch": true, "description": "3 word characters" },
+        { "text": "hi", "shouldMatch": false, "description": "2 characters (fails \\w, \\w+)" },
+        { "text": "!@#", "shouldMatch": false, "description": "Symbols (fails .{3}, \\S{3})" }
+      ]
     },
     {
       "id": "m2_c16",
@@ -149,7 +233,12 @@
       "scaffold": "blind",
       "prompt": "Match one or more non-space characters.",
       "canonicalSolution": "\\S+",
-      "testCases": [{ "text": "CodeReps", "shouldMatch": true }, { "text": "   ", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "CodeReps", "shouldMatch": true, "description": "Non-space string" },
+        { "text": "    ", "shouldMatch": false, "description": "Spaces only (fails \\S*, \\w+, \\D+, .*)" }
+      ]
     }
   ]
 }

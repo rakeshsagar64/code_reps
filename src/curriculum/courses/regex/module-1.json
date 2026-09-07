@@ -17,25 +17,42 @@
       "prompt": "Match any single digit.",
       "ghostTemplate": "\\d",
       "canonicalSolution": "\\d",
-      "testCases": [{ "text": "User 7", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "7", "shouldMatch": true, "description": "Single digit" },
+        { "text": "A", "shouldMatch": false, "description": "Letter (fails \\w, ., \\S)" },
+        { "text": "_", "shouldMatch": false, "description": "Underscore (fails \\w, .)" },
+        { "text": " ", "shouldMatch": false, "description": "Space (fails .)" }
+      ]
     },
     {
       "id": "m1_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match any word character.",
+      "prompt": "Match any word character (letters, digits, underscore).",
       "ghostTemplate": "\\w",
       "canonicalSolution": "\\w",
-      "testCases": [{ "text": "code_123", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "code_123", "shouldMatch": true, "description": "Word characters" },
+        { "text": "!", "shouldMatch": false, "description": "Punctuation (fails ., \\S, \\D)" },
+        { "text": " ", "shouldMatch": false, "description": "Whitespace (fails ., \\D)" }
+      ]
     },
     {
       "id": "m1_c3",
-      "type": "atomic",
-      "scaffold": "ghost",
-      "prompt": "Match any whitespace character.",
-      "ghostTemplate": "\\s",
-      "canonicalSolution": "\\s",
-      "testCases": [{ "text": "hello world", "shouldMatch": true }]
+      "title": "Matching Whitespace",
+      "prompt": "Use the whitespace shorthand character class to match any space or tab.",
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": " ", "shouldMatch": true, "description": "Single space" },
+        { "text": "\t", "shouldMatch": true, "description": "Tab character" },
+        { "text": "helloworld", "shouldMatch": false, "description": "No whitespace (fails \\w, ., [a-z])" },
+        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\d, .)" }
+      ]
     },
     {
       "id": "m1_c4",
@@ -44,7 +61,12 @@
       "prompt": "Match a digit in a string.",
       "ghostTemplate": "\\d",
       "canonicalSolution": "\\d",
-      "testCases": [{ "text": "Item 9", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "Item 9", "shouldMatch": true, "description": "Contains digit 9" },
+        { "text": "Item Nine", "shouldMatch": false, "description": "No digits (fails \\w, ., \\S, [a-z])" }
+      ]
     },
     {
       "id": "m1_c5",
@@ -53,7 +75,12 @@
       "prompt": "Match a word character.",
       "ghostTemplate": "\\w",
       "canonicalSolution": "\\w",
-      "testCases": [{ "text": "A", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "A", "shouldMatch": true, "description": "Uppercase letter" },
+        { "text": "@#$", "shouldMatch": false, "description": "Symbols only (fails ., \\D, \\S)" }
+      ]
     },
     {
       "id": "m1_c6",
@@ -62,7 +89,14 @@
       "prompt": "Match a non-digit character.",
       "ghostTemplate": "\\D",
       "canonicalSolution": "\\D",
-      "testCases": [{ "text": "7", "shouldMatch": false }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "A", "shouldMatch": true, "description": "Letter is non-digit" },
+        { "text": " ", "shouldMatch": true, "description": "Space is non-digit" },
+        { "text": "7", "shouldMatch": false, "description": "Digit (fails \\d)" },
+        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\s, [a-z])" }
+      ]
     },
     {
       "id": "m1_c7",
@@ -70,7 +104,12 @@
       "scaffold": "blind",
       "prompt": "Match a single digit without ghost prompt.",
       "canonicalSolution": "\\d",
-      "testCases": [{ "text": "5", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "5", "shouldMatch": true, "description": "Single digit" },
+        { "text": "X", "shouldMatch": false, "description": "Non-digit letter (fails \\w, ., \\S)" }
+      ]
     },
     {
       "id": "m1_c8",
@@ -78,7 +117,12 @@
       "scaffold": "blind",
       "prompt": "Match a word character without ghost prompt.",
       "canonicalSolution": "\\w",
-      "testCases": [{ "text": "x", "shouldMatch": true }]
+      "validatorType": "regex",
+      "flags": "g",
+      "testCases": [
+        { "text": "x", "shouldMatch": true, "description": "Word character" },
+        { "text": "---", "shouldMatch": false, "description": "Hyphens (fails ., \\D, \\S)" }
+      ]
     }
   ]
 }

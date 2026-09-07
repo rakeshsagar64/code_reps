@@ -1,0 +1,325 @@
+{
+  "id": "module-7",
+  "courseId": "regex",
+  "order": 7,
+  "title": "Flags, Lazy Quantifiers & Complex Pattern Matching",
+  "description": "Master execution flags, lazy quantifiers (`*?`, `+?`, `??`), and complex real-world string parsing while avoiding catastrophic backtracking.",
+  "primer": {
+    "syntaxToken": "*?, +?, ??, /i, /m, /s",
+    "definition": "Lazy quantifiers (*?, +?, ??) match the shortest possible substring required to satisfy the expression instead of greedily expanding. Flags modify engine execution behavior globally across multiline strings, casing, and dot-matching capabilities.",
+    "goldenRule": "Use lazy quantifiers when capturing content bounded by explicit delimiters (like quotes, backticks, or HTML tags) to prevent over-matching across multiple adjacent occurrences."
+  },
+  "cards": [
+    {
+      "id": "m7_c1",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'a' followed by as few characters as possible until 'b' using lazy quantifier `.*?`.",
+      "ghostTemplate": "a.*?b",
+      "canonicalSolution": "a.*?b",
+      "testCases": [
+        { "text": "axxb", "shouldMatch": true },
+        { "text": "ab", "shouldMatch": true },
+        { "text": "axx", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c2",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match one or more digits lazily using `+?` followed by 'px'.",
+      "ghostTemplate": "\\d+?px",
+      "canonicalSolution": "\\d+?px",
+      "testCases": [
+        { "text": "100px", "shouldMatch": true },
+        { "text": "0px", "shouldMatch": true },
+        { "text": "100em", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c3",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match 'colou' followed lazily by optional 'u' (`u??`) and 'r'.",
+      "ghostTemplate": "colou??r",
+      "canonicalSolution": "colou??r",
+      "testCases": [
+        { "text": "color", "shouldMatch": true },
+        { "text": "colour", "shouldMatch": true },
+        { "text": "colouur", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c4",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match content inside single quotes lazily strictly from start to end.",
+      "ghostTemplate": "^'.*?'$",
+      "canonicalSolution": "^'.*?'$",
+      "testCases": [
+        { "text": "'hello'", "shouldMatch": true },
+        { "text": "''", "shouldMatch": true },
+        { "text": "'hello' 'world'", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c5",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match 2 to 4 digits lazily followed by 'kg' strictly from start to end.",
+      "ghostTemplate": "^\\d{2,4}?kg$",
+      "canonicalSolution": "^\\d{2,4}?kg$",
+      "testCases": [
+        { "text": "10kg", "shouldMatch": true },
+        { "text": "1000kg", "shouldMatch": true },
+        { "text": "1kg", "shouldMatch": false },
+        { "text": "10000kg", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c6",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Extract content inside square brackets lazily using `\\[.*?\\]`.",
+      "ghostTemplate": "\\[.*?\\]",
+      "canonicalSolution": "\\[.*?\\]",
+      "testCases": [
+        { "text": "[INFO]", "shouldMatch": true },
+        { "text": "[DEBUG] log message", "shouldMatch": true },
+        { "text": "no brackets", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c7",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match multi-line style block comment between '/*' and '*/' lazily.",
+      "ghostTemplate": "/\\*.*?\\*/",
+      "canonicalSolution": "/\\*.*?\\*/",
+      "testCases": [
+        { "text": "/* comment */", "shouldMatch": true },
+        { "text": "/* first */ text /* second */", "shouldMatch": true },
+        { "text": "// comment", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c8",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match JSON key-value string pair '\"key\": \"value\"' lazily strictly from start to end.",
+      "ghostTemplate": "^\".*?\":\\s*\".*?\"$",
+      "canonicalSolution": "^\".*?\":\\s*\".*?\"$",
+      "testCases": [
+        { "text": "\"name\": \"Alice\"", "shouldMatch": true },
+        { "text": "\"id\": \"123\"", "shouldMatch": true },
+        { "text": "\"key\": value", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c9",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match template placeholder variable enclosed in '{{' and '}}' lazily.",
+      "ghostTemplate": "\\{\\{.*?\\}\\}",
+      "canonicalSolution": "\\{\\{.*?\\}\\}",
+      "testCases": [
+        { "text": "{{user_name}}", "shouldMatch": true },
+        { "text": "{{ item.id }}", "shouldMatch": true },
+        { "text": "{user}", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c10",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match string starting with 'A' and ending lazily with 'Z' strictly from start to end.",
+      "ghostTemplate": "^A.*?Z$",
+      "canonicalSolution": "^A.*?Z$",
+      "testCases": [
+        { "text": "A123Z", "shouldMatch": true },
+        { "text": "AZ", "shouldMatch": true },
+        { "text": "A123", "shouldMatch": false },
+        { "text": "123Z", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c11",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match Markdown inline code backticks '`.*?`' lazily.",
+      "ghostTemplate": "`.*?`",
+      "canonicalSolution": "`.*?`",
+      "testCases": [
+        { "text": "`const x = 1`", "shouldMatch": true },
+        { "text": "`a` and `b`", "shouldMatch": true },
+        { "text": "no code", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c12",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match HTML paragraph tag '<p>' with any attributes and inner content lazily up to '</p>'.",
+      "ghostTemplate": "<p.*?>.*?</p>",
+      "canonicalSolution": "<p.*?>.*?</p>",
+      "testCases": [
+        { "text": "<p class=\"text\">Hello</p>", "shouldMatch": true },
+        { "text": "<p>Hi</p>", "shouldMatch": true },
+        { "text": "<div>Hello</div>", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c13",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match URL query string starting with '?' lazily stopping at '#' or end of line strictly from start to end.",
+      "ghostTemplate": "^\\?.*?(?:#|$)",
+      "canonicalSolution": "^\\?.*?(?:#|$)",
+      "testCases": [
+        { "text": "?query=1#ref", "shouldMatch": true },
+        { "text": "?page=2", "shouldMatch": true },
+        { "text": "page=2", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c14",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Extract content inside parentheses '(...) ' lazily strictly from start to end.",
+      "ghostTemplate": "^\\(.*?\\)$",
+      "canonicalSolution": "^\\(.*?\\)$",
+      "testCases": [
+        { "text": "(value)", "shouldMatch": true },
+        { "text": "()", "shouldMatch": true },
+        { "text": "(a) (b)", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c15",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match block starting with 'BEGIN' and ending lazily with 'END' strictly from start to end.",
+      "ghostTemplate": "^BEGIN.*?END$",
+      "canonicalSolution": "^BEGIN.*?END$",
+      "testCases": [
+        { "text": "BEGIN data END", "shouldMatch": true },
+        { "text": "BEGINEND", "shouldMatch": true },
+        { "text": "START data END", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c16",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match log line starting with timestamp '[YYYY-MM-DD HH:MM:SS]' lazily followed by message strictly from start to end.",
+      "ghostTemplate": "^\\[\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\]\\s+.*?$",
+      "canonicalSolution": "^\\[\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\]\\s+.*?$",
+      "testCases": [
+        { "text": "[2026-09-07 10:00:00] Server started", "shouldMatch": true },
+        { "text": "[2026-09-07] Error", "shouldMatch": false },
+        { "text": "Server started", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c17",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match Markdown link format '[text](url)' strictly start to end using lazy quantifiers for both link text and URL.",
+      "canonicalSolution": "^\\[.*?\\]\\(.*?\\)$",
+      "testCases": [
+        { "text": "[Google](https://google.com)", "shouldMatch": true },
+        { "text": "[Docs](/doc)", "shouldMatch": true },
+        { "text": "[missing link]", "shouldMatch": false },
+        { "text": "(https://google.com)", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c18",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match double-quoted string with support for escaped quotes '\"' strictly start to end.",
+      "canonicalSolution": "^\"(?:[^\"\\\\]|\\\\.)*\"$",
+      "testCases": [
+        { "text": "\"Hello \\\"World\\\"\"", "shouldMatch": true },
+        { "text": "\"Simple text\"", "shouldMatch": true },
+        { "text": "\"Unterminated", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c19",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match an XML/HTML void or self-closing tag (e.g. '<img src=\"logo.png\" />') lazily strictly from start to end.",
+      "canonicalSolution": "^<[a-z1-6]+\\s+.*?/>$",
+      "testCases": [
+        { "text": "<img src=\"logo.png\" />", "shouldMatch": true },
+        { "text": "<input type=\"text\" />", "shouldMatch": true },
+        { "text": "<div></div>", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c20",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match SQL string literal wrapped in single quotes supporting escaped single quotes '' strictly start to end.",
+      "canonicalSolution": "^'(?:''|[^'])*'$",
+      "testCases": [
+        { "text": "'O''Reilly'", "shouldMatch": true },
+        { "text": "'Simple'", "shouldMatch": true },
+        { "text": "'Unclosed", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c21",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match IPv4 address strictly from start to end validating 4 octets (0-255).",
+      "canonicalSolution": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      "testCases": [
+        { "text": "192.168.1.1", "shouldMatch": true },
+        { "text": "127.0.0.1", "shouldMatch": true },
+        { "text": "256.100.0.1", "shouldMatch": false },
+        { "text": "1.2.3", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c22",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match Semantic Versioning (SemVer) string (e.g. '1.0.0', '2.1.0-alpha.1') strictly from start to end.",
+      "canonicalSolution": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "testCases": [
+        { "text": "1.0.0", "shouldMatch": true },
+        { "text": "2.1.0-alpha.1", "shouldMatch": true },
+        { "text": "1.0.0+20130313144700", "shouldMatch": true },
+        { "text": "1.0", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c23",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match function call syntax e.g. 'calculate(x, y)', capturing function identifier in group 1 and arguments string in group 2 strictly start to end.",
+      "canonicalSolution": "^([a-zA-Z_]\\w*)\\((.*?)\\)$",
+      "testCases": [
+        { "text": "calculate(x, y)", "shouldMatch": true },
+        { "text": "run()", "shouldMatch": true },
+        { "text": "123func()", "shouldMatch": false },
+        { "text": "fn(a, b", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c24",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match ISO 8601 UTC timestamp e.g. '2026-09-07T11:08:50Z' or '2026-09-07T11:08:50.123Z' strictly from start to end.",
+      "canonicalSolution": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "testCases": [
+        { "text": "2026-09-07T11:08:50Z", "shouldMatch": true },
+        { "text": "2026-09-07T11:08:50.123Z", "shouldMatch": true },
+        { "text": "2026-09-07 11:08:50Z", "shouldMatch": false },
+        { "text": "2026-09-07T11:08:50", "shouldMatch": false }
+      ]
+    }
+  ]
+}
