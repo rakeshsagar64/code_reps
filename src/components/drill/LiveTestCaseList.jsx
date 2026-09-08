@@ -15,42 +15,36 @@ export function LiveTestCaseList({ testCases = [], userInput = '' }) {
   };
 
   return (
-    <div className="space-y-2.5">
-      <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1 font-mono">
+    <div className="test-cases-container">
+      {/* Header Bar */}
+      <div className="test-cases-header">
         <span>Test Cases</span>
         <span>Requirement</span>
       </div>
 
-      <div className="space-y-2">
+      {/* Test Case Items */}
+      <div className="test-cases-list">
         {testCases.map((tc, idx) => {
           const result = evaluateTestCase(tc);
 
           return (
             <div
               key={idx}
-              className={`flex items-center justify-between rounded-xl border-l-4 border-y border-r p-3.5 font-mono text-xs sm:text-sm transition-all ${
-                result.isPassed
-                  ? 'border-l-emerald-500 border-slate-800 bg-emerald-950/10 text-emerald-200'
-                  : 'border-l-slate-700 border-slate-800/80 bg-slate-900/40 text-slate-400'
-              }`}
+              className={`test-case-item ${result.isPassed ? 'passed' : ''}`}
             >
-              <div className="flex items-center gap-3 truncate pr-2">
+              <div className="test-case-content">
                 {result.isPassed ? (
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  <CheckCircle2 size={16} className="test-case-icon passed" />
                 ) : (
-                  <XCircle className="h-4 w-4 shrink-0 text-slate-600" />
+                  <XCircle size={16} className="test-case-icon pending" />
                 )}
-                <span className="truncate">{tc.text}</span>
+                <span className="test-case-text">
+                  {tc.text}
+                </span>
               </div>
 
-              <span
-                className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-sans font-bold uppercase tracking-wider ${
-                  tc.shouldMatch
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-slate-800/80 text-slate-400 border border-slate-700/50'
-                }`}
-              >
-                {tc.shouldMatch ? 'Match' : 'Skip'}
+              <span className={`test-case-badge ${tc.shouldMatch ? 'match' : 'skip'}`}>
+                {tc.shouldMatch ? 'Should Match' : 'Should Not Match'}
               </span>
             </div>
           );
