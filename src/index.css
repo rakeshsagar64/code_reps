@@ -1,28 +1,52 @@
-/* src/App.css - Darker Black Gradient & Sharp Theme */
-* {
+/* src/index.css - Global Styles & Fullscreen Layout Fixes */
+
+/** {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-radius: 0 !important; /* Preserves sharp technical edges */
 }
 
-body {
-  /* Shifted from heavy navy blue to a deep black-to-slate gradient */
-  background: linear-gradient(160deg, #000000 30%, #1b2c4a 100%);
-  background-attachment: fixed;
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000000;
   color: #f1f5f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  padding: 16px;
-  min-height: 100vh;
+}*/
+
+/* Paste this at the top of index.css / App.css */
+html,
+body,
+#root {
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0;
+  padding: 0;
+  overflow: auto !important; /* Forces root scrolling if components overflow */
 }
 
+/* Base Container (for standard dashboard pages) */
 .container {
-  max-width: 560px;
+  width: 100%;
+  max-width: 1200px; /* Expanded from 560px */
   margin: 0 auto;
+  padding: 16px;
 }
 
-/* Streamlined Header (Streak Banner Removed) */
+/* Full-width screen wrapper for IDE / Drills */
+.container-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+/* Streamlined Header */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -230,140 +254,11 @@ body {
   margin-bottom: 6px;
 }
 
-/* --- Drill Screen Styling --- */
-.drill-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.drill-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1b2c4a;
-  border: 1px solid #2a416a;
-  padding: 12px 16px;
-}
-
-.drill-title-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.prompt-card {
-  background-color: #1b2c4a;
-  border: 1px solid #2a416a;
-  padding: 20px;
-}
-
-.prompt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.prompt-instruction {
-  font-size: 15px;
-  color: #f8fafc;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-/* Code Editor Input */
-.editor-container {
-  background-color: #0a111e;
-  border: 2px solid #2a416a;
-  padding: 16px;
-  transition: border-color 0.2s ease;
-}
-
-.editor-container:focus-within {
-  border-color: #10b981;
-}
-
-.editor-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #10b981;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  font-family: monospace;
-}
-
-.editor-input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #34d399;
-  font-family: monospace;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/* Test Cases Section */
-.test-section-title {
-  font-size: 12px;
-  font-weight: 800;
-  color: #94a3b8;
-  text-transform: uppercase;
-  margin: 8px 0;
-  font-family: monospace;
-  letter-spacing: 0.05em;
-}
-
-.test-case-card {
-  background-color: #1b2c4a;
-  border: 1px solid #2a416a;
-  border-left: 4px solid #64748b;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-.test-case-card.passed {
-  border-left-color: #10b981;
-  background-color: rgba(16, 185, 129, 0.08);
-  color: #34d399;
-}
-
-.test-case-card.failed {
-  border-left-color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.08);
-  color: #f87171;
-}
-
-.test-status-badge {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border: 1px solid currentColor;
-}
-
-.test-status-badge.passed {
-  color: #10b981;
-  border-color: rgba(16, 185, 129, 0.4);
-}
-
-.test-status-badge.failed {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.4);
-}
-
-/* --- Dashboard Section Header Styling --- */
+/* Dashboard Section Header */
 .dashboard-section-header {
   background-color: #1b2c4a;
   border: 1px solid #2a416a;
-  border-left: 4px solid #10b981; /* Emerald green accent indicator */
+  border-left: 4px solid #10b981;
   padding: 16px 20px;
   margin-bottom: 20px;
 }
@@ -394,369 +289,29 @@ body {
   line-height: 1.4;
 }
 
-/* --- Drill Screen Styling --- */
-.drill-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.drill-empty-state {
-  text-align: center;
-  padding: 32px;
-  color: #cbd5e1;
-}
-
-.btn-compact {
-  margin-top: 16px;
-  width: auto;
-  padding: 8px 16px;
-}
-
-.drill-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1b2c4a;
-  border: 1px solid #2a416a;
-  padding: 12px 16px;
-}
-
-.drill-title-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.drill-module-title {
-  margin-left: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  color: #f8fafc;
-}
-
-.drill-card-counter {
-  font-family: monospace;
-  font-size: 12px;
-  color: #cbd5e1;
-}
-
-.counter-highlight {
-  color: #10b981;
-  font-weight: bold;
-}
-
-/* Prompt Card */
-.prompt-card {
-  background: #0f172a;
-  padding: 20px;
-  border: 1px solid #1e293b;
-  border-left: 4px solid #10b981;
-  margin-bottom: 20px;
-}
-
-.prompt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.primer-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.prompt-type-label {
-  font-size: 12px;
-  color: #94a3b8;
-  font-family: monospace;
-}
-
-.prompt-instruction {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.4;
-}
-
-/* Target Block */
-.target-block {
-  margin-top: 14px;
-  background: #020617;
-  border: 1px solid #1e293b;
-  padding: 12px;
-  font-family: monospace;
-}
-
-.target-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748b;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.target-code {
-  font-size: 14px;
-  color: #6ee7b7;
-  font-weight: 600;
-}
-
-/* Workspace Grid */
-.drill-workspace {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-  align-items: start;
-  margin-bottom: 24px;
-}
-
-/* Primary Action & State Buttons */
-.btn-action.btn-submit {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 14px 20px;
-  font-weight: 700;
-  font-size: 15px;
-  border: none;
-  transition: all 0.2s ease;
-  background-color: #10b981;
-  color: #020617;
-  cursor: pointer;
-  opacity: 1;
-}
-
-.btn-action.btn-submit:disabled {
-  background-color: #1e293b;
-  color: #64748b;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.btn-shortcut-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.shortcut-badge {
-  font-size: 11px;
-  font-family: monospace;
-  background: rgba(0, 0, 0, 0.2);
-  color: #020617;
-  padding: 3px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.btn-action.btn-submit:disabled .shortcut-badge {
-  background: rgba(0, 0, 0, 0.4);
-  color: #94a3b8;
-}
-
-/* --- Ghost Input Editor Styling --- */
-.ghost-editor-card {
-  position: relative;
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid #1e293b;
-  background: #020617;
-  padding: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-}
-
-.ghost-editor-header {
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: monospace;
-}
-
-.ghost-editor-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #10b981;
-}
-
-/* Force round dot override against global zero-radius resets */
-.ghost-editor-dot {
-  height: 8px;
-  width: 8px;
-  border-radius: 50% !important;
-  background-color: #10b981;
-}
-
-.ghost-editor-field-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-family: monospace;
-  font-size: 20px;
-  letter-spacing: 0.05em;
-}
-
-.ghost-overlay-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  white-space: pre;
-  pointer-events: none;
-  font-size: 20px;
-}
-
-.ghost-overlay-wrapper {
-  pointer-events: none;
-  user-select: none;
-  display: inline-flex;
-}
-
-.ghost-hidden-text {
-  opacity: 0;
-}
-
-.ghost-remaining-text {
-  color: #475569;
-  font-family: monospace;
-  font-weight: 600;
-}
-
-.ghost-native-input {
-  width: 100%;
+/* Text Inputs */
+.text-input, .line-input {
   background: transparent;
-  color: #6ee7b7;
   border: none;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 2.4rem;
+  font-family: "Segoe UI", sans-serif;
   outline: none;
-  z-index: 10;
-  font-family: monospace;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  padding: 0;
 }
 
-/* --- Live Test Case List Styling --- */
-.test-cases-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.text-input::placeholder, .line-input::placeholder {
+  color: #aaa;
+  opacity: 0.6;
+  font-weight: 400;
 }
 
-.test-cases-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 4px;
-  font-family: monospace;
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.test-cases-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.test-case-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-family: monospace;
-  font-size: 13px;
-  border: 1px solid #1e293b;
-  border-left: 4px solid #334155;
-  background: rgba(15, 23, 42, 0.4);
-  color: #94a3b8;
-  box-sizing: border-box;
-}
-
-.test-case-item.passed {
-  border-left-color: #10b981;
-  background: rgba(6, 78, 59, 0.2);
-  color: #a7f3d0;
-}
-
-.test-case-content {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding-right: 8px;
-}
-
-.test-case-icon {
-  flex-shrink: 0;
-}
-
-.test-case-icon.passed {
-  color: #34d399;
-}
-
-.test-case-icon.pending {
-  color: #475569;
-}
-
-.test-case-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.test-case-badge {
-  flex-shrink: 0;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-family: sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: rgba(30, 41, 59, 0.8);
-  color: #94a3b8;
-  border: 1px solid rgba(51, 65, 85, 0.5);
-}
-
-.test-case-badge.match {
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.test-case-badge.skip {
-  background: rgba(16, 185, 129, 0.1);
-  color: #94a3b8;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+input[type="number"] {
+  -moz-appearance: textfield;
 }

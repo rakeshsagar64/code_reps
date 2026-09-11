@@ -30,13 +30,15 @@ export default function App() {
   return (
     <div className="container">
       {!activeDrillModule ? (
-        <DashboardScreen onLaunchDrill={setActiveDrillModule} />
-      ) : (
+          <DashboardScreen onLaunchDrill={setActiveDrillModule} />
+  ) : (
+         <div className="screen screen-active drill-screen">
         <DrillScreen
           module={activeDrillModule}
           onClose={() => setActiveDrillModule(null)}
           onCompleteSession={handleCompleteSession}
-        />
+      />
+         </div>
       )}
     </div>
   );

@@ -1,0 +1,517 @@
+/* ==========================================================================
+   CODE REPS DRILL SCREEN - MASTER STYLESHEET
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0f172a;
+  --panel-bg: rgba(30, 41, 59, 0.6);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --primary-blue: #3b82f6;
+  --primary-blue-glow: rgba(59, 130, 246, 0.2);
+  --accent-green: #10b981;
+  --accent-green-glow: rgba(16, 185, 129, 0.2);
+  --accent-red: #ef4444;
+  --accent-red-glow: rgba(239, 68, 68, 0.2);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+}
+
+/* 1. Root Zero-Scroll Viewport Layout */
+.drill-screen-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  padding: 16px;
+  gap: 12px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 2. Header Bar & Controls */
+.drill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.drill-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.title-stack {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.drill-module-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-main);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primer-toggle,
+.toggle-auto-advance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primer-toggle.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.toggle-auto-advance.active {
+  background: var(--accent-green-glow);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--accent-green);
+}
+
+.toggle-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.drill-card-counter {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.counter-highlight {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+/* 3. Collapsible Primer Drawer */
+.primer-dropdown {
+  background: #1e293b;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-left: 4px solid var(--primary-blue);
+  border-radius: 8px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+  animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.primer-dropdown-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.85rem;
+}
+
+.primer-syntax-badge {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.primer-definition {
+  margin: 0;
+  color: var(--text-main);
+  flex: 1;
+}
+
+.primer-rule {
+  margin: 0;
+  color: #fde047;
+  background: rgba(234, 179, 8, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px dashed rgba(234, 179, 8, 0.3);
+  font-size: 0.8rem;
+}
+
+/* 4. Main 2-Column Split Workspace */
+.drill-split-workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0; /* Ensures inner containers clamp height */
+}
+
+.drill-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* 5. Objective Prompt Card */
+.prompt-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.primer-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.prompt-type-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.prompt-instruction {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-main);
+}
+
+.target-block {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.target-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.target-code {
+  font-family: var(--font-mono);
+  color: #f472b6;
+  font-size: 0.9rem;
+}
+
+/* 6. Ghost Input Editor (Pixel-Perfect Layering) */
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ghost-editor-card {
+  background: #1e293b;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.ghost-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.ghost-editor-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--accent-green);
+}
+
+.ghost-editor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.ghost-editor-field-group {
+  position: relative;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.ghost-editor-field-group:focus-within {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px var(--primary-blue-glow);
+}
+
+.ghost-overlay-layer {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  pointer-events: none;
+  white-space: pre;
+}
+
+.ghost-hidden-text {
+  visibility: hidden;
+}
+
+.ghost-remaining-text {
+  color: var(--text-muted);
+  opacity: 0.35;
+}
+
+.ghost-native-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  caret-color: #38bdf8;
+}
+
+/* 7. Live Test Cases Container & Highlights */
+.test-cases-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+}
+
+.test-cases-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.test-cases-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.test-cases-list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 6px;
+}
+
+.test-case-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.test-case-item.passed {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.test-case-item.failing {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+.test-case-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.test-case-icon.passed { color: var(--accent-green); }
+.test-case-icon.pending { color: var(--text-muted); opacity: 0.5; }
+
+.test-case-text {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+/* Regex Substring Match Highlighting */
+mark.match-highlight {
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+mark.match-highlight-valid {
+  background-color: var(--accent-green-glow);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+mark.match-highlight-invalid {
+  background-color: var(--accent-red-glow);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.test-case-badge {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.test-case-badge.match {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.test-case-badge.skip {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-muted);
+}
+
+/* 8. Submit / Action Button */
+.btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--primary-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-submit:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.2);
+  cursor: not-allowed;
+}
+
+.btn-submit.advancing {
+  background-color: #059669 !important;
+  transform: scale(0.99);
+}
+
+.btn-shortcut-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortcut-badge {
+  font-size: 0.72rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}

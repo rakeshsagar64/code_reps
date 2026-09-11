@@ -6,15 +6,9 @@ import { LessonPrimerScreen } from '../lesson/LessonPrimerScreen.jsx';
 export function DashboardScreen({ onLaunchDrill }) {
   const [selectedModule, setSelectedModule] = useState(null);
 
-  // Mock progress state (Ensure keys match the "id" field in your JSONs, e.g., 'module-1')
-  const mockProgress = {
-    'module-1': 100,
-    'module-2': 0,
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl space-y-8">
+    <div className="h-full min-h-screen overflow-y-auto bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl space-y-8 pb-16">
         {/* Header Stats */}
         <header className="app-header">
           <div className="brand">
@@ -30,25 +24,18 @@ export function DashboardScreen({ onLaunchDrill }) {
         <div className="dashboard-section-header">
           <span className="section-badge">// CURRICULUM</span>
           <h2 className="section-title">Modules</h2>
-          <p className="section-desc">Complete modules to build regex muscle memory.</p>
+          <p className="section-desc">Select any module below to practice regex drills.</p>
         </div>
 
         {/* Module Card Grid */}
         <div className="space-y-4">
-          {regexCourse.modules.map((module, index) => {
-            const progress = mockProgress[module.id] || 0;
-            const isUnlocked = index === 0 || (mockProgress[regexCourse.modules[index - 1]?.id] || 0) >= 100;
-
-            return (
-              <ModuleCard
-                key={module.id}
-                module={module}
-                isUnlocked={isUnlocked}
-                progressPercent={progress}
-                onStartLesson={(mod) => setSelectedModule(mod)}
-              />
-            );
-          })}
+          {regexCourse.modules.map((module) => (
+            <ModuleCard
+              key={module.id}
+              module={module}
+              onStartLesson={(mod) => setSelectedModule(mod)}
+            />
+          ))}
         </div>
       </div>
 
