@@ -6,457 +6,520 @@
   "description": "Enforce structural position boundaries (^, $, \\b) combined with M1 classes and M2 quantifiers.",
   "primer": {
     "syntaxToken": "^, $, \\b",
-    "definition": "^ asserts the start of string, $ asserts the end of string, and \\b asserts a word boundary position.",
-    "goldenRule": "Anchors do not consume any characters—they strictly enforce location boundaries."
+    "definition": "^ asserts the start of a string or line, $ asserts the end of a string or line, and \\b asserts a word boundary position.",
+    "goldenRule": "Anchors do not consume any characters—they strictly enforce location boundaries.",
+    "mentalModel": "Think of anchors as zero-width invisible position checkpoints. They evaluate where a match occurs within the text rather than matching actual visible characters.",
+    "points": [
+      "^ enforces matching strictly from the beginning of the input string.",
+      "$ enforces matching strictly up to the end of the input string.",
+      "\\b matches the zero-width boundary position between a word character (\\w) and a non-word character (\\W) or string edge.",
+      "Wrapping a pattern with \\b on both sides (e.g., \\bcat\\b) enforces whole-word matching, preventing partial matches inside longer words.",
+      "Wrapping patterns in ^ and $ (^...$) converts partial substring matching into exact full-string validation."
+    ],
+    "pitfalls": [
+      "Confusing word boundaries (\\b) with whitespace (\\s): \\b is a zero-width assertion that consumes no characters, whereas \\s matches actual space/tab characters.",
+      "Omitting ^ or $ during input validation: an unanchored pattern like \\d+ will match digits inside 'abc123xyz' instead of enforcing a digit-only string.",
+      "Placing ^ inside character sets ([^...]): inside square brackets, ^ negates the set rather than matching the start of the string."
+    ]
   },
   "cards": [
     {
       "id": "m3_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Assert the start of a string using ^.",
+      "prompt": "Match lines starting with a word character to identify valid code variable declarations.",
       "ghostTemplate": "^\\w",
       "canonicalSolution": "^\\w",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "code", "shouldMatch": true, "description": "Starts with word character" },
-        { "text": "#code", "shouldMatch": false, "description": "Starts with symbol (fails unanchored \\w)" }
+        { "text": "config_var", "shouldMatch": true, "expected": "c", "description": "Extracts initial word character 'c' at start of line; blocks non-start match" },
+        { "text": "system_init", "shouldMatch": true, "expected": "s", "description": "Extracts initial word character 's' at start of line; blocks unanchored match" },
+        { "text": "#config_var", "shouldMatch": false, "description": "Fails when string starts with '#' symbol instead of a word character" },
+        { "text": "@system_init", "shouldMatch": false, "description": "Fails when string starts with '@' symbol instead of a word character" }
       ]
     },
     {
       "id": "m3_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Assert the end of a string using $.",
+      "prompt": "Identify transaction records that end with a single status digit at the end of the line.",
       "ghostTemplate": "\\d$",
       "canonicalSolution": "\\d$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "order9", "shouldMatch": true, "description": "Ends with digit" },
-        { "text": "order9abc", "shouldMatch": false, "description": "Digit not at end (fails unanchored \\d)" }
+        { "text": "order_id_9", "shouldMatch": true, "expected": "9", "description": "Extracts trailing digit '9' at end of string; blocks internal digit match" },
+        { "text": "txn_status_5", "shouldMatch": true, "expected": "5", "description": "Extracts trailing digit '5' at end of string; blocks unanchored digit" },
+        { "text": "order_id_9abc", "shouldMatch": false, "description": "Fails when string ends with letters after the digit" },
+        { "text": "txn_status_5#", "shouldMatch": false, "description": "Fails when string ends with a symbol after the digit" }
       ]
     },
     {
       "id": "m3_c3",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Assert a word boundary using \\b.",
+      "prompt": "Match the word root 'cat' at the beginning of a word boundary to parse inventory category codes.",
       "ghostTemplate": "\\bcat",
       "canonicalSolution": "\\bcat",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "cat", "shouldMatch": true, "description": "Starts with word boundary" },
-        { "text": "wildcat", "shouldMatch": false, "description": "No boundary before cat (fails cat without \\b)" }
+        { "text": "cat_item", "shouldMatch": true, "expected": "cat", "description": "Extracts 'cat' preceded by a word boundary; blocks mid-word matches" },
+        { "text": "cat log", "shouldMatch": true, "expected": "cat", "description": "Extracts 'cat' at start boundary; blocks unanchored mid-word substring" },
+        { "text": "wildcat", "shouldMatch": false, "description": "Fails when 'cat' is preceded by word characters without a boundary" },
+        { "text": "bobcat", "shouldMatch": false, "description": "Fails when 'cat' appears as a suffix inside a word" }
       ]
     },
     {
       "id": "m3_c4",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Enforce match from start to end using ^ and $.",
+      "prompt": "Validate user input strings that contain strictly digit characters from start to end, such as internal account PINs.",
       "ghostTemplate": "^\\d+$",
       "canonicalSolution": "^\\d+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "9982", "shouldMatch": true, "description": "Entirely digits" },
-        { "text": "a9982", "shouldMatch": false, "description": "Leading letter (fails unanchored \\d+)" },
-        { "text": "9982a", "shouldMatch": false, "description": "Trailing letter (fails unanchored \\d+)" }
+        { "text": "99823", "shouldMatch": true, "expected": "99823", "description": "Matches string consisting entirely of digits from start to end; blocks partial match" },
+        { "text": "40591", "shouldMatch": true, "expected": "40591", "description": "Matches multi-digit string fully anchored; blocks single-digit shortcut \\d" },
+        { "text": "a99823", "shouldMatch": false, "description": "Fails when string contains leading non-digit letter" },
+        { "text": "40591a", "shouldMatch": false, "description": "Fails when string contains trailing non-digit letter" }
       ]
     },
     {
       "id": "m3_c5",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Assert start boundary before word character.",
+      "prompt": "Assert a word boundary at the start of a string to extract the initial alphanumeric character of an identifier.",
       "ghostTemplate": "^\\b\\w",
       "canonicalSolution": "^\\b\\w",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "start", "shouldMatch": true, "description": "Starts with word character" },
-        { "text": "#start", "shouldMatch": false, "description": "Starts with symbol (fails \\w without ^)" }
+        { "text": "start_process", "shouldMatch": true, "expected": "s", "description": "Extracts initial letter 's' with start and word boundary assertion; blocks symbol prefix" },
+        { "text": "run_job", "shouldMatch": true, "expected": "r", "description": "Extracts initial letter 'r' at start word boundary; blocks unanchored match" },
+        { "text": "#start_process", "shouldMatch": false, "description": "Fails when string starts with '#' symbol before word character" },
+        { "text": "!run_job", "shouldMatch": false, "description": "Fails when string starts with '!' symbol before word character" }
       ]
     },
     {
       "id": "m3_c6",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Assert word boundary before end of string.",
+      "prompt": "Extract the final word character preceding a boundary at the end of a string to validate clean text line endings.",
       "ghostTemplate": "\\w\\b$",
       "canonicalSolution": "\\w\\b$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "finish", "shouldMatch": true, "description": "Ends with word character" },
-        { "text": "finish!", "shouldMatch": false, "description": "Ends with symbol (fails \\w without $)" }
+        { "text": "finish_task", "shouldMatch": true, "expected": "k", "description": "Extracts trailing word character 'k' at end boundary; blocks unanchored match" },
+        { "text": "complete", "shouldMatch": true, "expected": "e", "description": "Extracts trailing word character 'e' at end boundary; blocks trailing punctuation" },
+        { "text": "finish_task!", "shouldMatch": false, "description": "Fails when string ends with punctuation mark '!'" },
+        { "text": "complete.", "shouldMatch": false, "description": "Fails when string ends with period symbol '.'" }
       ]
     },
     {
       "id": "m3_c7",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Ensure entire string contains ONLY digits.",
+      "prompt": "Validate numeric employee identification numbers ensuring the string contains exclusively digits.",
       "ghostTemplate": "^\\d+$",
       "canonicalSolution": "^\\d+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "12345", "shouldMatch": true, "description": "Digits only" },
-        { "text": "123a45", "shouldMatch": false, "description": "Contains letter (fails unanchored \\d+)" }
+        { "text": "12345", "shouldMatch": true, "expected": "12345", "description": "Matches numeric ID with only digits; blocks unanchored match" },
+        { "text": "987654", "shouldMatch": true, "expected": "987654", "description": "Matches multi-digit ID from start to end; blocks single-digit shortcut \\d" },
+        { "text": "123a45", "shouldMatch": false, "description": "Fails when ID contains an embedded letter 'a'" },
+        { "text": "987-654", "shouldMatch": false, "description": "Fails when ID contains a hyphen symbol" }
       ]
     },
     {
       "id": "m3_c8",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Ensure entire string contains ONLY word characters.",
+      "prompt": "Validate system usernames to ensure the input consists strictly of word characters from start to end.",
       "ghostTemplate": "^\\w+$",
       "canonicalSolution": "^\\w+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "user_name", "shouldMatch": true, "description": "Word characters only" },
-        { "text": "user-name", "shouldMatch": false, "description": "Contains hyphen (fails unanchored \\w+)" }
+        { "text": "user_name1", "shouldMatch": true, "expected": "user_name1", "description": "Matches username composed strictly of word characters; blocks unanchored match" },
+        { "text": "admin_v2", "shouldMatch": true, "expected": "admin_v2", "description": "Matches valid word characters; blocks single character shortcut \\w" },
+        { "text": "user-name1", "shouldMatch": false, "description": "Fails when username contains invalid hyphen character" },
+        { "text": "admin.v2", "shouldMatch": false, "description": "Fails when username contains invalid dot character" }
       ]
     },
     {
       "id": "m3_c9",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match a string consisting strictly of 2 to 4 word characters.",
+      "prompt": "Validate database table alias strings ensuring they consist strictly of 2 to 4 word characters.",
       "ghostTemplate": "^\\w{2,4}$",
       "canonicalSolution": "^\\w{2,4}$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "code", "shouldMatch": true, "description": "4 word characters" },
-        { "text": "a", "shouldMatch": false, "description": "1 character (too short)" },
-        { "text": "coding", "shouldMatch": false, "description": "6 characters (fails \\w+ or unanchored \\w{2,4})" }
+        { "text": "tbl", "shouldMatch": true, "expected": "tbl", "description": "Matches valid 3-character table alias; blocks unanchored match" },
+        { "text": "code", "shouldMatch": true, "expected": "code", "description": "Matches valid 4-character table alias; blocks open quantifier shortcut \\w+" },
+        { "text": "a", "shouldMatch": false, "description": "Fails when string length is less than 2 characters" },
+        { "text": "coding", "shouldMatch": false, "description": "Fails when string length exceeds 4 characters" }
       ]
     },
     {
       "id": "m3_c10",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string starting with one or more digits.",
+      "prompt": "Extract leading HTTP status codes or log line quantities that start with one or more digits.",
       "ghostTemplate": "^\\d+",
       "canonicalSolution": "^\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "100 apples", "shouldMatch": true, "description": "Starts with digits" },
-        { "text": "apples 100", "shouldMatch": false, "description": "Digits not at start (fails unanchored \\d+)" }
+        { "text": "100 apples", "shouldMatch": true, "expected": "100", "description": "Extracts full leading digit sequence '100'; blocks single digit shortcut \\d" },
+        { "text": "404 Not Found", "shouldMatch": true, "expected": "404", "description": "Extracts leading status code '404'; blocks unanchored digits" },
+        { "text": "apples 100", "shouldMatch": false, "description": "Fails when digits are not positioned at the start of the line" },
+        { "text": "HTTP 404", "shouldMatch": false, "description": "Fails when text precedes the digits at the start of the line" }
       ]
     },
     {
       "id": "m3_c11",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string ending with one or more digits.",
+      "prompt": "Extract trailing item quantity numbers or invoice record IDs at the end of a line.",
       "ghostTemplate": "\\d+$",
       "canonicalSolution": "\\d+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "Item 42", "shouldMatch": true, "description": "Ends with digits" },
-        { "text": "Item 42a", "shouldMatch": false, "description": "Letter at end (fails unanchored \\d+)" }
+        { "text": "Item 429", "shouldMatch": true, "expected": "429", "description": "Extracts full trailing sequence '429'; blocks single digit shortcut \\d" },
+        { "text": "Invoice #8812", "shouldMatch": true, "expected": "8812", "description": "Extracts full trailing invoice number '8812'; blocks unanchored digits" },
+        { "text": "Item 429a", "shouldMatch": false, "description": "Fails when trailing digit sequence is followed by a letter" },
+        { "text": "Invoice #8812-", "shouldMatch": false, "description": "Fails when string ends with trailing dash symbol" }
       ]
     },
     {
       "id": "m3_c12",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string starting with a letter or word character.",
+      "prompt": "Match the first word character of a line to validate code variable declarations or config keys.",
       "ghostTemplate": "^\\w",
       "canonicalSolution": "^\\w",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "hello", "shouldMatch": true, "description": "Starts with word character" },
-        { "text": "#hello", "shouldMatch": false, "description": "Starts with symbol (fails unanchored \\w)" }
+        { "text": "hello_world", "shouldMatch": true, "expected": "h", "description": "Extracts first word character 'h' at start of line; blocks non-start match" },
+        { "text": "port80", "shouldMatch": true, "expected": "p", "description": "Extracts first word character 'p' at start of line; blocks unanchored match" },
+        { "text": "#hello_world", "shouldMatch": false, "description": "Fails when line starts with comment symbol '#'" },
+        { "text": "$port80", "shouldMatch": false, "description": "Fails when line starts with currency or variable symbol '$'" }
       ]
     },
     {
       "id": "m3_c13",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string ending with one or more word characters.",
+      "prompt": "Extract the final word token at the end of log entry lines to capture status flags.",
       "ghostTemplate": "\\w+$",
       "canonicalSolution": "\\w+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "status: ok", "shouldMatch": true, "description": "Ends with word characters" },
-        { "text": "status: ok!", "shouldMatch": false, "description": "Ends with punctuation (fails unanchored \\w+)" }
+        { "text": "status: ok", "shouldMatch": true, "expected": "ok", "description": "Extracts full trailing word token 'ok'; blocks single character shortcut \\w" },
+        { "text": "server_state: running", "shouldMatch": true, "expected": "running", "description": "Extracts full trailing word token 'running'; blocks unanchored match" },
+        { "text": "status: ok!", "shouldMatch": false, "description": "Fails when trailing token ends with exclamation mark" },
+        { "text": "server_state: running;", "shouldMatch": false, "description": "Fails when trailing token ends with semicolon" }
       ]
     },
     {
       "id": "m3_c14",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string consisting strictly of a 5-digit ZIP code.",
+      "prompt": "Validate user input ensuring the string consists strictly of a standard 5-digit postal ZIP code.",
       "ghostTemplate": "^\\d{5}$",
       "canonicalSolution": "^\\d{5}$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "90210", "shouldMatch": true, "description": "Exactly 5 digits" },
-        { "text": "9021", "shouldMatch": false, "description": "4 digits (too short)" },
-        { "text": "902101", "shouldMatch": false, "description": "6 digits (fails unanchored \\d{5})" }
+        { "text": "90210", "shouldMatch": true, "expected": "90210", "description": "Matches exact 5-digit ZIP code; blocks partial match" },
+        { "text": "10001", "shouldMatch": true, "expected": "10001", "description": "Matches exact 5-digit postal code; blocks open quantifier shortcut \\d+" },
+        { "text": "9021", "shouldMatch": false, "description": "Fails when postal code has only 4 digits (too short)" },
+        { "text": "902101", "shouldMatch": false, "description": "Fails when postal code has 6 digits (too long)" }
       ]
     },
     {
       "id": "m3_c15",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match standalone word 'cat' using word boundaries.",
+      "prompt": "Extract the exact standalone word 'cat' from product description tags using word boundaries.",
       "ghostTemplate": "\\bcat\\b",
       "canonicalSolution": "\\bcat\\b",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "the cat sat", "shouldMatch": true, "description": "Standalone word cat" },
-        { "text": "category", "shouldMatch": false, "description": "cat as prefix (fails cat\\b)" },
-        { "text": "wildcat", "shouldMatch": false, "description": "cat as suffix (fails \\bcat)" }
+        { "text": "the cat sat", "shouldMatch": true, "expected": "cat", "description": "Extracts standalone word 'cat'; blocks prefix/suffix match" },
+        { "text": "feed the cat today", "shouldMatch": true, "expected": "cat", "description": "Extracts isolated word 'cat'; blocks unanchored sub-word match" },
+        { "text": "category items", "shouldMatch": false, "description": "Fails when 'cat' is a prefix in 'category'" },
+        { "text": "wildcat shelter", "shouldMatch": false, "description": "Fails when 'cat' is a suffix in 'wildcat'" }
       ]
     },
     {
       "id": "m3_c16",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string starting with 'LOG:' followed by word characters.",
+      "prompt": "Extract log headers that start with 'LOG:' followed by one or more event word characters.",
       "ghostTemplate": "^LOG:\\w+",
       "canonicalSolution": "^LOG:\\w+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "LOG:Init", "shouldMatch": true, "description": "Starts with LOG: followed by chars" },
-        { "text": "ERR LOG:Init", "shouldMatch": false, "description": "LOG: not at start (fails unanchored LOG:\\w+)" },
-        { "text": "LOG:", "shouldMatch": false, "description": "Missing word characters after prefix" }
+        { "text": "LOG:Init", "shouldMatch": true, "expected": "LOG:Init", "description": "Extracts full prefix and event name 'LOG:Init'; blocks single char shortcut \\w" },
+        { "text": "LOG:SystemError", "shouldMatch": true, "expected": "LOG:SystemError", "description": "Extracts full event token 'LOG:SystemError'; blocks unanchored match" },
+        { "text": "ERR LOG:Init", "shouldMatch": false, "description": "Fails when 'LOG:' prefix is not at the start of the line" },
+        { "text": "LOG:", "shouldMatch": false, "description": "Fails when 'LOG:' is not followed by any word characters" }
       ]
     },
     {
       "id": "m3_c17",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string ending with 'END'.",
+      "prompt": "Validate that a data stream block terminates with the marker 'END' at the end of the line.",
       "ghostTemplate": "END$",
       "canonicalSolution": "END$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "THE END", "shouldMatch": true, "description": "Ends with END" },
-        { "text": "ENDING", "shouldMatch": false, "description": "END not at end (fails unanchored END)" }
+        { "text": "STREAM_DATA_END", "shouldMatch": true, "expected": "END", "description": "Matches trailing marker 'END' at end of string; blocks unanchored match" },
+        { "text": "THE END", "shouldMatch": true, "expected": "END", "description": "Matches end marker 'END'; blocks match when follow-up characters exist" },
+        { "text": "ENDING_NOW", "shouldMatch": false, "description": "Fails when 'END' is followed by additional characters at line end" },
+        { "text": "STREAM_DATA_END_V2", "shouldMatch": false, "description": "Fails when 'END' appears before trailing text" }
       ]
     },
     {
       "id": "m3_c18",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match standalone word 'code'.",
+      "prompt": "Extract the exact standalone word 'code' from developer commit messages using word boundaries.",
       "ghostTemplate": "\\bcode\\b",
       "canonicalSolution": "\\bcode\\b",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "write code now", "shouldMatch": true, "description": "Standalone word code" },
-        { "text": "codex", "shouldMatch": false, "description": "code as prefix" },
-        { "text": "decode", "shouldMatch": false, "description": "code as suffix (fails \\bcode)" }
+        { "text": "write code now", "shouldMatch": true, "expected": "code", "description": "Extracts standalone word 'code'; blocks partial word match" },
+        { "text": "clean code base", "shouldMatch": true, "expected": "code", "description": "Extracts isolated 'code'; blocks unanchored substring match" },
+        { "text": "codex documentation", "shouldMatch": false, "description": "Fails when 'code' is a prefix in 'codex'" },
+        { "text": "decode payload", "shouldMatch": false, "description": "Fails when 'code' is a suffix in 'decode'" }
       ]
     },
     {
       "id": "m3_c19",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string consisting exclusively of whitespace spaces.",
+      "prompt": "Detect blank formatted line entries containing strictly whitespace characters from start to end.",
       "ghostTemplate": "^\\s+$",
       "canonicalSolution": "^\\s+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "   ", "shouldMatch": true, "description": "Whitespace spaces only" },
-        { "text": " a ", "shouldMatch": false, "description": "Contains letter (fails unanchored \\s+)" }
+        { "text": "   ", "shouldMatch": true, "expected": "   ", "description": "Matches string containing strictly ASCII spaces; blocks unanchored match" },
+        { "text": "\t\t", "shouldMatch": true, "expected": "\t\t", "description": "Matches string containing strictly tab characters; blocks single char shortcut \\s" },
+        { "text": " a ", "shouldMatch": false, "description": "Fails when line contains non-whitespace letter character 'a'" },
+        { "text": "   .", "shouldMatch": false, "description": "Fails when line contains trailing period symbol" }
       ]
     },
     {
       "id": "m3_c20",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure string contains ONLY 3 to 6 digits.",
+      "prompt": "Validate standard verification OTP tokens ensuring the string contains strictly 3 to 6 digits.",
       "canonicalSolution": "^\\d{3,6}$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "1234", "shouldMatch": true, "description": "4 digits (within range)" },
-        { "text": "12", "shouldMatch": false, "description": "2 digits (too short)" },
-        { "text": "1234567", "shouldMatch": false, "description": "7 digits (fails \\d+ or open-ended range)" }
+        { "text": "1234", "shouldMatch": true, "expected": "1234", "description": "Matches valid 4-digit OTP code; blocks partial string match" },
+        { "text": "987654", "shouldMatch": true, "expected": "987654", "description": "Matches valid 6-digit OTP code; blocks open quantifier shortcut \\d+" },
+        { "text": "12", "shouldMatch": false, "description": "Fails when OTP token is under 3 digits long" },
+        { "text": "1234567", "shouldMatch": false, "description": "Fails when OTP token exceeds 6 digits in length" }
       ]
     },
     {
       "id": "m3_c21",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure string contains ONLY non-digit characters.",
+      "prompt": "Validate user full name fields ensuring the string consists strictly of non-digit characters from start to end.",
       "canonicalSolution": "^\\D+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "hello", "shouldMatch": true, "description": "Non-digits only" },
-        { "text": "hello5", "shouldMatch": false, "description": "Contains digit at end (fails unanchored \\D+)" }
+        { "text": "John Doe", "shouldMatch": true, "expected": "John Doe", "description": "Matches full name containing non-digit characters; blocks partial match" },
+        { "text": "Alice Smith", "shouldMatch": true, "expected": "Alice Smith", "description": "Matches alphabetic name string; blocks single char shortcut \\D" },
+        { "text": "John Doe5", "shouldMatch": false, "description": "Fails when name string contains a trailing digit '5'" },
+        { "text": "2nd Alice Smith", "shouldMatch": false, "description": "Fails when name string contains a leading digit '2'" }
       ]
     },
     {
       "id": "m3_c22",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match string starting with exactly 3 digits.",
+      "prompt": "Extract the 3-digit telephone area code at the start of formatted phone numbers.",
       "canonicalSolution": "^\\d{3}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "555-1234", "shouldMatch": true, "description": "Starts with 3 digits" },
-        { "text": "55-1234", "shouldMatch": false, "description": "Starts with 2 digits (fails unanchored \\d{3})" }
+        { "text": "555-1234", "shouldMatch": true, "expected": "555", "description": "Extracts exact 3-digit area code at start; blocks 2-digit shortcut \\d{2}" },
+        { "text": "800-555-0199", "shouldMatch": true, "expected": "800", "description": "Extracts leading 3-digit prefix '800'; blocks unanchored digits" },
+        { "text": "55-1234", "shouldMatch": false, "description": "Fails when area code prefix has only 2 digits" },
+        { "text": "Phone: 555-1234", "shouldMatch": false, "description": "Fails when area code is not positioned at the start of the string" }
       ]
     },
     {
       "id": "m3_c23",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match string ending with exactly 4 digits.",
+      "prompt": "Extract the last 4 digits of a payment card or account reference at the end of a line.",
       "canonicalSolution": "\\d{4}$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "card-9821", "shouldMatch": true, "description": "Ends with 4 digits" },
-        { "text": "card-982", "shouldMatch": false, "description": "Ends with 3 digits (too short)" }
+        { "text": "card-9821", "shouldMatch": true, "expected": "9821", "description": "Extracts trailing 4 digits '9821'; blocks single digit shortcut \\d" },
+        { "text": "acct_last_5542", "shouldMatch": true, "expected": "5542", "description": "Extracts trailing 4 digits '5542'; blocks unanchored match" },
+        { "text": "card-982", "shouldMatch": false, "description": "Fails when trailing digit sequence is only 3 digits long" },
+        { "text": "card-9821a", "shouldMatch": false, "description": "Fails when trailing digits are followed by a letter" }
       ]
     },
     {
       "id": "m3_c24",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match string starting with 'USER_' followed by one or more digits.",
+      "prompt": "Extract user log identity prefixes that start with 'USER_' followed by one or more numeric ID digits.",
       "canonicalSolution": "^USER_\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "USER_102", "shouldMatch": true, "description": "Starts with USER_ and digits" },
-        { "text": "GUEST_102", "shouldMatch": false, "description": "Wrong prefix" },
-        { "text": "OLD_USER_102", "shouldMatch": false, "description": "USER_ not at start (fails unanchored USER_\\d+)" },
-        { "text": "USER_ABC", "shouldMatch": false, "description": "Non-digits after prefix" }
+        { "text": "USER_102", "shouldMatch": true, "expected": "USER_102", "description": "Extracts full identifier 'USER_102'; blocks single digit shortcut \\d" },
+        { "text": "USER_88392", "shouldMatch": true, "expected": "USER_88392", "description": "Extracts multi-digit user identifier 'USER_88392'; blocks unanchored match" },
+        { "text": "OLD_USER_102", "shouldMatch": false, "description": "Fails when 'USER_' prefix is not located at start of line" },
+        { "text": "USER_ABC", "shouldMatch": false, "description": "Fails when 'USER_' prefix is followed by non-digits" }
       ]
     },
     {
       "id": "m3_c25",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match any standalone 3-letter word.",
+      "prompt": "Extract any standalone 3-letter word token (like HTTP methods 'GET', 'PUT') using word boundaries.",
       "canonicalSolution": "\\b\\w{3}\\b",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "the cat sat", "shouldMatch": true, "description": "Contains 3-letter word" },
-        { "text": "four", "shouldMatch": false, "description": "4-letter word (fails unanchored \\w{3})" }
+        { "text": "GET /api/v1", "shouldMatch": true, "expected": "GET", "description": "Extracts standalone 3-letter word 'GET'; blocks 2-letter or partial match" },
+        { "text": "run PUT request", "shouldMatch": true, "expected": "PUT", "description": "Extracts standalone 3-letter word 'PUT'; blocks open quantifier shortcut \\w+" },
+        { "text": "four", "shouldMatch": false, "description": "Fails when word token has 4 characters" },
+        { "text": "in", "shouldMatch": false, "description": "Fails when word token has only 2 characters" }
       ]
     },
     {
       "id": "m3_c26",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure string starts with digit and consists strictly of word characters.",
+      "prompt": "Validate database feature flag keys ensuring they start with a digit and consist strictly of word characters.",
       "canonicalSolution": "^\\d\\w+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "1test", "shouldMatch": true, "description": "Starts with digit, word chars only" },
-        { "text": "test1", "shouldMatch": false, "description": "Does not start with digit" },
-        { "text": "1test!", "shouldMatch": false, "description": "Contains symbol at end (fails unanchored \\d\\w+)" }
+        { "text": "1beta_test", "shouldMatch": true, "expected": "1beta_test", "description": "Matches key starting with digit and made of word chars; blocks unanchored match" },
+        { "text": "9version_key", "shouldMatch": true, "expected": "9version_key", "description": "Matches feature flag string; blocks single char shortcut \\w" },
+        { "text": "beta_test1", "shouldMatch": false, "description": "Fails when string starts with a letter instead of a digit" },
+        { "text": "1beta-test", "shouldMatch": false, "description": "Fails when string contains invalid hyphen symbol" }
       ]
     },
     {
       "id": "m3_c27",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure string consists strictly of 3 to 8 word characters.",
+      "prompt": "Validate user role names ensuring the string consists strictly of 3 to 8 word characters.",
       "canonicalSolution": "^\\w{3,8}$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "admin", "shouldMatch": true, "description": "5 word characters" },
-        { "text": "hi", "shouldMatch": false, "description": "2 word characters (too short)" },
-        { "text": "superadministrator", "shouldMatch": false, "description": "18 characters (fails \\w+ or unanchored range)" }
+        { "text": "admin", "shouldMatch": true, "expected": "admin", "description": "Matches valid 5-character role name 'admin'; blocks partial match" },
+        { "text": "operator", "shouldMatch": true, "expected": "operator", "description": "Matches valid 8-character role name 'operator'; blocks open quantifier shortcut \\w+" },
+        { "text": "hi", "shouldMatch": false, "description": "Fails when role name is only 2 characters long (too short)" },
+        { "text": "superadministrator", "shouldMatch": false, "description": "Fails when role name exceeds 8 characters in length (too long)" }
       ]
     },
     {
       "id": "m3_c28",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match standalone word 'dev'.",
+      "prompt": "Extract the exact standalone word 'dev' from server environment tags using word boundaries.",
       "canonicalSolution": "\\bdev\\b",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "senior dev lead", "shouldMatch": true, "description": "Standalone word dev" },
-        { "text": "developer", "shouldMatch": false, "description": "dev as prefix" },
-        { "text": "redev", "shouldMatch": false, "description": "dev as suffix (fails \\bdev)" }
+        { "text": "senior dev lead", "shouldMatch": true, "expected": "dev", "description": "Extracts standalone word 'dev'; blocks sub-word match" },
+        { "text": "target: dev server", "shouldMatch": true, "expected": "dev", "description": "Extracts isolated token 'dev'; blocks unanchored match" },
+        { "text": "developer status", "shouldMatch": false, "description": "Fails when 'dev' is a prefix in 'developer'" },
+        { "text": "redev instance", "shouldMatch": false, "description": "Fails when 'dev' is a suffix in 'redev'" }
       ]
     },
     {
       "id": "m3_c29",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure entire string is non-whitespace characters.",
+      "prompt": "Validate API token strings ensuring the value contains strictly non-whitespace characters from start to end.",
       "canonicalSolution": "^\\S+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "no_spaces_here", "shouldMatch": true, "description": "Non-whitespace only" },
-        { "text": "has space", "shouldMatch": false, "description": "Contains space (fails unanchored \\S+)" }
+        { "text": "bearer_token_xyz123", "shouldMatch": true, "expected": "bearer_token_xyz123", "description": "Matches API token with non-whitespace characters; blocks partial match" },
+        { "text": "api-key-991823", "shouldMatch": true, "expected": "api-key-991823", "description": "Matches non-whitespace key string; blocks single char shortcut \\S" },
+        { "text": "bearer token", "shouldMatch": false, "description": "Fails when token contains an embedded space character" },
+        { "text": "api-key\t", "shouldMatch": false, "description": "Fails when token contains a trailing tab character" }
       ]
     },
     {
       "id": "m3_c30",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match string starting with one or more whitespace spaces.",
+      "prompt": "Extract leading indentation whitespace at the start of code block lines.",
       "canonicalSolution": "^\\s+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "   indented", "shouldMatch": true, "description": "Starts with spaces" },
-        { "text": "not_indented", "shouldMatch": false, "description": "No spaces" },
-        { "text": "not indented", "shouldMatch": false, "description": "Space in middle, not at start (fails unanchored \\s+)" }
+        { "text": "    indented_line", "shouldMatch": true, "expected": "    ", "description": "Extracts full leading space sequence '    '; blocks single space shortcut \\s" },
+        { "text": "\t\tcode_block", "shouldMatch": true, "expected": "\t\t", "description": "Extracts leading tab sequence '\t\t'; blocks unanchored whitespace match" },
+        { "text": "not_indented", "shouldMatch": false, "description": "Fails when line does not start with whitespace" },
+        { "text": "print(x) ", "shouldMatch": false, "description": "Fails when whitespace is located at end of line instead of start" }
       ]
     },
     {
       "id": "m3_c31",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match string ending with one or more whitespace spaces.",
+      "prompt": "Extract trailing whitespace characters at the end of formatted lines for code linter cleanup.",
       "canonicalSolution": "\\s+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "trailing   ", "shouldMatch": true, "description": "Ends with spaces" },
-        { "text": "no_trailing", "shouldMatch": false, "description": "No trailing spaces" },
-        { "text": "has space inside", "shouldMatch": false, "description": "Space in middle, not at end (fails unanchored \\s+)" }
+        { "text": "trailing_line   ", "shouldMatch": true, "expected": "   ", "description": "Extracts full sequence of trailing spaces '   '; blocks single space shortcut \\s" },
+        { "text": "clean_code\t\t", "shouldMatch": true, "expected": "\t\t", "description": "Extracts trailing tabs '\t\t' at end of line; blocks unanchored whitespace" },
+        { "text": "no_trailing_space", "shouldMatch": false, "description": "Fails when line has no trailing whitespace" },
+        { "text": "  no_trailing_space", "shouldMatch": false, "description": "Fails when whitespace is located at start of line instead of end" }
       ]
     },
     {
       "id": "m3_c32",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Ensure entire string contains strictly one or more digits or letters.",
+      "prompt": "Validate database table field names ensuring the string contains exclusively word characters.",
       "canonicalSolution": "^\\w+$",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "Valid123", "shouldMatch": true, "description": "Word characters only" },
-        { "text": "Invalid!", "shouldMatch": false, "description": "Contains exclamation mark (fails unanchored \\w+)" }
+        { "text": "ValidField123", "shouldMatch": true, "expected": "ValidField123", "description": "Matches valid field name composed of word characters; blocks partial match" },
+        { "text": "user_account_id", "shouldMatch": true, "expected": "user_account_id", "description": "Matches valid underscore identifier; blocks single char shortcut \\w" },
+        { "text": "InvalidField!", "shouldMatch": false, "description": "Fails when field name contains exclamation mark" },
+        { "text": "user-account-id", "shouldMatch": false, "description": "Fails when field name contains hyphen symbol" }
       ]
     }
   ]

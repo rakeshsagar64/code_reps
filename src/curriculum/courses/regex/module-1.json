@@ -6,8 +6,53 @@
   "description": "Master \\d, \\w, and \\s.",
   "primer": {
     "syntaxToken": "\\d, \\w, \\s",
-    "definition": "\\d = digits, \\w = word characters (alphanumeric + _), \\s = whitespace.",
-    "goldenRule": "Capitalization inverts: \\D non-digit, \\W non-word, \\S non-space."
+    "mentalModel": "Think of character classes as engine shortcuts. Instead of manually writing ranges like [0-9] or [a-zA-Z0-9_], these single-letter tokens instantly tell the regex engine to match digits, word characters, or spacing.",
+    "points": [
+      "\\d matches any single digit (0 through 9).",
+      "\\w matches any single word character: letters (a-z, A-Z), numbers (0-9), and underscores (_).",
+      "\\s matches any single whitespace character (spaces, tabs, and line breaks).",
+      "Inversion Rule: Capitalizing the token inverts its meaning—\\D (non-digit), \\W (non-word), \\S (non-whitespace)."
+    ],
+    "pitfalls": [
+      "\\w does NOT match punctuation or special symbols (like @, #, $, or hyphens -). A string like 'user-name' contains two \\w blocks separated by a \\W hyphen.",
+      "\\d, \\w, and \\s match exactly ONE character at a time unless combined with a quantifier like + or *.",
+      "\\s includes hidden characters like tabs (\\t) and line breaks (\\n), not just standard keyboard spaces."
+    ],
+    "examples": [
+      {
+        "pattern": "\\d\\d\\d",
+        "match": "402",
+        "note": "Matches exactly three consecutive digits"
+      },
+      {
+        "pattern": "\\w+",
+        "match": "user_100",
+        "note": "Matches sequence of letters, numbers, and underscores"
+      },
+      {
+        "pattern": "\\D+",
+        "match": "Order ID: ",
+        "note": "Inverted class matches everything that is NOT a digit"
+      }
+    ],
+    "testCases": {
+      "positive": [
+        {
+          "target": "Order ID: 8492",
+          "expected": "8492",
+          "hint": "Use \\d+ to isolate consecutive numbers"
+        },
+        {
+          "target": "user_name_99",
+          "expected": "user_name_99",
+          "hint": "Use \\w+ to match letters, numbers, and underscores"
+        }
+      ],
+      "negative": [
+        "---===---",
+        "!!! @#$"
+      ]
+    }
   },
   "cards": [
     {
@@ -20,10 +65,11 @@
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "7", "shouldMatch": true, "description": "Single digit" },
-        { "text": "A", "shouldMatch": false, "description": "Letter (fails \\w, ., \\S)" },
-        { "text": "_", "shouldMatch": false, "description": "Underscore (fails \\w, .)" },
-        { "text": " ", "shouldMatch": false, "description": "Space (fails .)" }
+        { "text": "7", "shouldMatch": true, "description": "Single digit 7" },
+        { "text": "3", "shouldMatch": true, "description": "Single digit 3 (blocks literal '7')" },
+        { "text": "A", "shouldMatch": false, "description": "Letter" },
+        { "text": "_", "shouldMatch": false, "description": "Underscore" },
+        { "text": " ", "shouldMatch": false, "description": "Space" }
       ]
     },
     {
@@ -36,36 +82,44 @@
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "code_123", "shouldMatch": true, "description": "Word characters" },
-        { "text": "!", "shouldMatch": false, "description": "Punctuation (fails ., \\S, \\D)" },
-        { "text": " ", "shouldMatch": false, "description": "Whitespace (fails ., \\D)" }
+        { "text": "a", "shouldMatch": true, "description": "Lowercase letter" },
+        { "text": "9", "shouldMatch": true, "description": "Digit (blocks [a-z])" },
+        { "text": "_", "shouldMatch": true, "description": "Underscore (blocks [a-zA-Z0-9])" },
+        { "text": "!", "shouldMatch": false, "description": "Punctuation" },
+        { "text": " ", "shouldMatch": false, "description": "Whitespace" }
       ]
     },
     {
       "id": "m1_c3",
-      "title": "Matching Whitespace",
-      "prompt": "Use the whitespace shorthand character class to match any space or tab.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Use the whitespace shorthand character class to match any space, tab, or newline.",
+      "ghostTemplate": "\\s",
+      "canonicalSolution": "\\s",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": " ", "shouldMatch": true, "description": "Single space" },
         { "text": "\t", "shouldMatch": true, "description": "Tab character" },
-        { "text": "helloworld", "shouldMatch": false, "description": "No whitespace (fails \\w, ., [a-z])" },
-        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\d, .)" }
+        { "text": "\n", "shouldMatch": true, "description": "Newline character" },
+        { "text": "!", "shouldMatch": false, "description": "Punctuation (blocks \\W false positive)" },
+        { "text": "a", "shouldMatch": false, "description": "Letter" },
+        { "text": "1", "shouldMatch": false, "description": "Digit" }
       ]
     },
     {
       "id": "m1_c4",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a digit in a string.",
+      "prompt": "Match any digit in a string.",
       "ghostTemplate": "\\d",
       "canonicalSolution": "\\d",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "Item 9", "shouldMatch": true, "description": "Contains digit 9" },
-        { "text": "Item Nine", "shouldMatch": false, "description": "No digits (fails \\w, ., \\S, [a-z])" }
+        { "text": "Item 4", "shouldMatch": true, "description": "Contains digit 4 (blocks literal '9')" },
+        { "text": "Item Nine", "shouldMatch": false, "description": "No digits" }
       ]
     },
     {
@@ -78,8 +132,11 @@
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "A", "shouldMatch": true, "description": "Uppercase letter" },
-        { "text": "@#$", "shouldMatch": false, "description": "Symbols only (fails ., \\D, \\S)" }
+        { "text": "Z", "shouldMatch": true, "description": "Uppercase letter" },
+        { "text": "5", "shouldMatch": true, "description": "Digit" },
+        { "text": "_", "shouldMatch": true, "description": "Underscore" },
+        { "text": "@", "shouldMatch": false, "description": "Symbol (blocks \\S false positive)" },
+        { "text": " ", "shouldMatch": false, "description": "Space" }
       ]
     },
     {
@@ -94,8 +151,9 @@
       "testCases": [
         { "text": "A", "shouldMatch": true, "description": "Letter is non-digit" },
         { "text": " ", "shouldMatch": true, "description": "Space is non-digit" },
-        { "text": "7", "shouldMatch": false, "description": "Digit (fails \\d)" },
-        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\s, [a-z])" }
+        { "text": "#", "shouldMatch": true, "description": "Symbol is non-digit (blocks \\w)" },
+        { "text": "7", "shouldMatch": false, "description": "Digit 7" },
+        { "text": "0", "shouldMatch": false, "description": "Digit 0" }
       ]
     },
     {
@@ -107,8 +165,10 @@
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "5", "shouldMatch": true, "description": "Single digit" },
-        { "text": "X", "shouldMatch": false, "description": "Non-digit letter (fails \\w, ., \\S)" }
+        { "text": "5", "shouldMatch": true, "description": "Single digit 5" },
+        { "text": "2", "shouldMatch": true, "description": "Single digit 2 (blocks literal '5')" },
+        { "text": "X", "shouldMatch": false, "description": "Non-digit letter" },
+        { "text": "#", "shouldMatch": false, "description": "Symbol" }
       ]
     },
     {
@@ -120,8 +180,11 @@
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "x", "shouldMatch": true, "description": "Word character" },
-        { "text": "---", "shouldMatch": false, "description": "Hyphens (fails ., \\D, \\S)" }
+        { "text": "x", "shouldMatch": true, "description": "Letter" },
+        { "text": "_", "shouldMatch": true, "description": "Underscore (blocks [a-z])" },
+        { "text": "8", "shouldMatch": true, "description": "Digit" },
+        { "text": "-", "shouldMatch": false, "description": "Hyphen" },
+        { "text": " ", "shouldMatch": false, "description": "Space" }
       ]
     }
   ]

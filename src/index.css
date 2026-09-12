@@ -1,24 +1,6 @@
-/* src/index.css - Global Styles & Fullscreen Layout Fixes */
-
-/** {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body, #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #000000;
-  color: #f1f5f9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-}*/
-
-/* Paste this at the top of index.css / App.css */
+/* ==========================================
+   1. Global Reset & Fullscreen Layout Fixes
+   ========================================== */
 html,
 body,
 #root {
@@ -26,13 +8,16 @@ body,
   min-height: 100% !important;
   margin: 0;
   padding: 0;
-  overflow: auto !important; /* Forces root scrolling if components overflow */
+  overflow: auto !important;
+  background-color: #000000;
+  color: #f1f5f9;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-/* Base Container (for standard dashboard pages) */
+/* Base Container (Dashboard) */
 .container {
   width: 100%;
-  max-width: 1200px; /* Expanded from 560px */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
 }
@@ -46,7 +31,9 @@ body,
   max-width: none;
 }
 
-/* Streamlined Header */
+/* ==========================================
+   2. Global Components (Dashboard, Header, Cards)
+   ========================================== */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -84,6 +71,40 @@ body,
   font-size: 12px;
   color: #94a3b8;
   font-family: monospace;
+}
+
+.dashboard-section-header {
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  border-left: 4px solid #10b981;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.section-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: monospace;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.section-desc {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 /* Module Cards */
@@ -172,7 +193,7 @@ body,
   transition: width 0.3s ease;
 }
 
-/* Primary Green Buttons */
+/* Buttons */
 .btn-action {
   width: 100%;
   background-color: #10b981;
@@ -239,56 +260,6 @@ body,
   margin-bottom: 20px;
 }
 
-.primer-section {
-  background: #0a111e;
-  border: 1px solid #2a416a;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-.primer-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #10b981;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-/* Dashboard Section Header */
-.dashboard-section-header {
-  background-color: #1b2c4a;
-  border: 1px solid #2a416a;
-  border-left: 4px solid #10b981;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-}
-
-.section-badge {
-  font-size: 11px;
-  font-weight: 800;
-  color: #10b981;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-family: monospace;
-  margin-bottom: 4px;
-  display: block;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: #f8fafc;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-
-.section-desc {
-  color: #94a3b8;
-  font-size: 13px;
-  margin-top: 4px;
-  line-height: 1.4;
-}
-
 /* Text Inputs */
 .text-input, .line-input {
   background: transparent;
@@ -314,4 +285,385 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ==========================================
+   3. Lesson Primer Screen (Compact / Low-Scroll)
+   ========================================== */
+
+.primer-page {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #000000;
+  color: #f1f5f9;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.primer-container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+/* Navigation Bar */
+.primer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2a416a;
+  padding-bottom: 8px;
+}
+
+.btn-back {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+
+.btn-back:hover {
+  color: #ffffff;
+}
+
+.primer-module-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 8px;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Title Header */
+.primer-header-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.primer-header-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+/* Compact Syntax Banner */
+.syntax-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  border-left: 3px solid #10b981;
+  padding: 8px 14px;
+}
+
+.syntax-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.syntax-label {
+  display: block;
+  font-size: 10px;
+  font-family: monospace;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.syntax-value {
+  font-size: 16px;
+  font-family: monospace;
+  font-weight: 800;
+  color: #34d399;
+}
+
+/* Primer Section Layout */
+.primer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.primer-section-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Mental Model */
+.mental-model-card {
+  background-color: #0a111e;
+  border: 1px solid #2a416a;
+  border-left: 3px solid #10b981;
+  padding: 10px 14px;
+}
+
+.mental-model-text {
+  font-size: 13px;
+  color: #e2e8f0;
+  line-height: 1.4;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Multi-Column Grid for Rules & Pitfalls */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.concept-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #0a111e;
+  border: 1px solid #2a416a;
+  padding: 10px 12px;
+}
+
+.concept-card-icon {
+  color: #10b981;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.concept-card-text {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.pitfall-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #0a111e;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 3px solid #f59e0b;
+  padding: 10px 12px;
+}
+
+.pitfall-card-icon {
+  color: #f59e0b;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.pitfall-card-text {
+  font-size: 12px;
+  color: #fef3c7;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Horizontal Example Cards */
+.example-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.example-item {
+  background-color: #0a111e;
+  border: 1px solid #2a416a;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.example-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.example-key {
+  font-family: monospace;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.example-value-code {
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  color: #34d399;
+  font-family: monospace;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.example-match-text {
+  font-family: monospace;
+  color: #38bdf8;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.example-note {
+  font-size: 11px;
+  color: #94a3b8;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Compact Target Preview Grid */
+.targets-preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.target-box {
+  background-color: #0a111e;
+  border: 1px solid #2a416a;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.positive-box {
+  border-top: 2px solid #10b981;
+}
+
+.negative-box {
+  border-top: 2px solid #ef4444;
+}
+
+.target-box-header {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.positive-box .target-box-header {
+  color: #34d399;
+}
+
+.negative-box .target-box-header {
+  color: #f87171;
+}
+
+.target-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.target-item {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.target-item code {
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  padding: 1px 5px;
+  color: #f8fafc;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.target-subtext {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* Action Buttons */
+.primer-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #2a416a;
+}
+
+.btn-learn-more {
+  flex: 1;
+  background-color: #1b2c4a;
+  border: 1px solid #2a416a;
+  color: #f8fafc;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-learn-more:hover {
+  background-color: #2a416a;
+  border-color: #10b981;
+}
+
+.btn-proceed {
+  flex: 1;
+  background-color: #10b981;
+  color: #022c22;
+  border: none;
+  padding: 10px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-proceed:hover {
+  background-color: #34d399;
+}
+
+@media (max-width: 640px) {
+  .targets-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .primer-actions {
+    flex-direction: column;
+  }
+
+  .syntax-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
 }

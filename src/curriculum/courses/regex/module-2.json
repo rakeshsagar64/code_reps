@@ -5,239 +5,578 @@
   "title": "Quantifiers & Concept Stacking",
   "description": "Control repetition counts (+, *, {n}) combined with M1 character classes.",
   "primer": {
-    "syntaxToken": "+, *, {n}",
-    "definition": "Quantifiers specify how many times the preceding character or class repeats: + (1+), * (0+), {n} (exact n count).",
-    "goldenRule": "Quantifiers attach strictly to the single character class token directly preceding them."
+    "syntaxToken": "+, *, {n}, {n,m}",
+    "definition": "Quantifiers specify how many times the preceding character or class repeats: + (1 or more), * (0 or more), {n} (exact count), {n,m} (range).",
+    "goldenRule": "Quantifiers attach strictly to the single character or character class token immediately preceding them.",
+    "mentalModel": "Think of quantifiers as repetition multipliers attached directly to the character class on their left. Lowercase shorthand classes match specific token types, while uppercase shorthand classes invert the match.",
+    "points": [
+      "+ requires at least 1 match; * allows 0 matches.",
+      "{n} sets an exact repetition count, while {n,m} defines an inclusive min and max range.",
+      "Capitalization inversion rule: Lowercase shorthands (\\d, \\w, \\s) match digits, word chars, and whitespace, whereas uppercase shorthands (\\D, \\W, \\S) match their exact opposites."
+    ],
+    "pitfalls": [
+      "Confusing + (1+) with * (0+): * matches empty strings/positions.",
+      "Assuming word character class matches symbols like ! or @: it only includes letters, digits, and underscores.",
+      "Adding spaces inside range quantifiers like {2, 4} will break the regex syntax."
+    ],
+    "examples": [
+      {
+        "pattern": "\\d+",
+        "match": "123",
+        "note": "Matches one or more contiguous digits."
+      },
+      {
+        "pattern": "\\w{3}",
+        "match": "cat",
+        "note": "Matches exactly three consecutive word characters."
+      },
+      {
+        "pattern": "\\S+",
+        "match": "Hello!",
+        "note": "Matches one or more non-whitespace characters including punctuation."
+      }
+    ],
+    "testCases": {
+      "positive": [
+        {
+          "target": "9942",
+          "expected": "9942",
+          "hint": "Use digit matching with quantifier + for 1 or more digits."
+        },
+        {
+          "target": "user_1",
+          "expected": "user_1",
+          "hint": "Use word character matching with quantifier + for letters, digits, and underscores."
+        }
+      ],
+      "negative": [
+        "   ",
+        "!@#$"
+      ]
+    }
   },
   "cards": [
     {
       "id": "m2_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match one or more digits using +.",
+      "prompt": "Extract numeric transaction amounts or status codes by matching one or more contiguous digits.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "123", "shouldMatch": true, "description": "Sequence of digits" },
-        { "text": "abc", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+, ., .*)" },
-        { "text": "   ", "shouldMatch": false, "description": "Spaces only (fails \\s+, .)" }
+        {
+          "text": "HTTP/1.1 404 Not Found",
+          "shouldMatch": true,
+          "expected": "404",
+          "description": "Matches contiguous error code digits (blocks single \\d shortcut)"
+        },
+        {
+          "text": "Order #89042 filled",
+          "shouldMatch": true,
+          "expected": "89042",
+          "description": "Matches full multi-digit order identifier"
+        },
+        {
+          "text": "No numbers present",
+          "shouldMatch": false,
+          "description": "Fails when no digits exist in string"
+        },
+        {
+          "text": "   ",
+          "shouldMatch": false,
+          "description": "Fails on pure whitespace"
+        },
+        {
+          "text": "!@#$%^&*",
+          "shouldMatch": false,
+          "description": "Fails on pure punctuation symbols"
+        }
       ]
     },
     {
       "id": "m2_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match zero or more word characters using *.",
+      "prompt": "Match zero or more word characters to handle optional identifier suffixes or empty tokens.",
       "ghostTemplate": "\\w*",
       "canonicalSolution": "\\w*",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "code", "shouldMatch": true, "description": "Word characters" },
-        { "text": "%#$", "shouldMatch": true, "description": "Zero word chars matches empty position (forces * over + or \\w)" }
+        {
+          "text": "schema_version_99",
+          "shouldMatch": true,
+          "expected": "schema_version_99",
+          "description": "Matches complete alphanumeric token with underscores"
+        },
+        {
+          "text": "data_record_101",
+          "shouldMatch": true,
+          "expected": "data_record_101",
+          "description": "Matches full general identifier string"
+        },
+        {
+          "text": "%#$@",
+          "shouldMatch": true,
+          "expected": "",
+          "description": "Zero word characters match zero-width position"
+        }
       ]
     },
     {
       "id": "m2_c3",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match exactly 3 digits using {3}.",
+      "prompt": "Extract 3-digit telecommunication area codes or HTTP response codes by matching exactly 3 consecutive digits.",
       "ghostTemplate": "\\d{3}",
       "canonicalSolution": "\\d{3}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "456", "shouldMatch": true, "description": "Exactly 3 digits" },
-        { "text": "12", "shouldMatch": false, "description": "Only 2 digits (fails \\d, \\d+, \\d{2})" },
-        { "text": "abc", "shouldMatch": false, "description": "Letters only (fails \\w+, .*)" }
+        {
+          "text": "Area code 415-555-0199",
+          "shouldMatch": true,
+          "expected": "415",
+          "description": "Extracts exact 3-digit phone area code"
+        },
+        {
+          "text": "HTTP Status 500 Internal Error",
+          "shouldMatch": true,
+          "expected": "500",
+          "description": "Extracts 3-digit HTTP status code"
+        },
+        {
+          "text": "Status 42",
+          "shouldMatch": false,
+          "description": "Fails on 2-digit status code"
+        }
       ]
     },
     {
       "id": "m2_c4",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match 2 to 4 word characters using {2,4}.",
+      "prompt": "Match variable identifiers restricted between 2 and 4 word characters.",
       "ghostTemplate": "\\w{2,4}",
       "canonicalSolution": "\\w{2,4}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "item", "shouldMatch": true, "description": "4 word characters" },
-        { "text": "a", "shouldMatch": false, "description": "1 character (fails \\w, \\w+, \\w*)" },
-        { "text": "!@#", "shouldMatch": false, "description": "Symbols only (fails .*, \\S+)" }
+        {
+          "text": "identifier_token",
+          "shouldMatch": true,
+          "expected": "iden",
+          "description": "Extracts max 4 characters (blocks \\w+ or \\w{2,} over-matching)"
+        },
+        {
+          "text": "usr",
+          "shouldMatch": true,
+          "expected": "usr",
+          "description": "Matches 3-character identifier string"
+        },
+        {
+          "text": "x",
+          "shouldMatch": false,
+          "description": "Fails on single character token"
+        },
+        {
+          "text": "-- !! --",
+          "shouldMatch": false,
+          "description": "Fails on non-word symbols"
+        }
       ]
     },
     {
       "id": "m2_c5",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a sequence of one or more digits.",
+      "prompt": "Isolate consecutive digit sequences inside mixed log messages or telemetry data.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "Order #48291", "shouldMatch": true, "description": "Contains digits" },
-        { "text": "No numbers", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+, \\s+, .*)" }
+        {
+          "text": "Latency recorded: 142ms",
+          "shouldMatch": true,
+          "expected": "142",
+          "description": "Matches full latency millisecond digits (blocks \\d shortcut)"
+        },
+        {
+          "text": "Retry attempt #382 in progress",
+          "shouldMatch": true,
+          "expected": "382",
+          "description": "Matches complete multi-digit count"
+        },
+        {
+          "text": "System status nominal",
+          "shouldMatch": false,
+          "description": "Fails on text containing no digits"
+        },
+        {
+          "text": "--- === ---",
+          "shouldMatch": false,
+          "description": "Fails on symbolic separators"
+        }
       ]
     },
     {
       "id": "m2_c6",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a sequence of one or more word characters.",
+      "prompt": "Match whole word tokens consisting of letters, numbers, and underscores.",
       "ghostTemplate": "\\w+",
       "canonicalSolution": "\\w+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "regex_101", "shouldMatch": true, "description": "Word characters" },
-        { "text": "!@#$", "shouldMatch": false, "description": "Symbols only (fails \\w*, .*, \\S+)" },
-        { "text": " ", "shouldMatch": false, "description": "Whitespace only (fails \\s*)" }
+        {
+          "text": "system_event_2026",
+          "shouldMatch": true,
+          "expected": "system_event_2026",
+          "description": "Matches complete composite key identifier (blocks \\w shortcut)"
+        },
+        {
+          "text": "auth_token_v2",
+          "shouldMatch": true,
+          "expected": "auth_token_v2",
+          "description": "Matches full alphanumeric token name"
+        },
+        {
+          "text": "@#$%^&*",
+          "shouldMatch": false,
+          "description": "Fails on pure punctuation strings"
+        },
+        {
+          "text": "   \t\n   ",
+          "shouldMatch": false,
+          "description": "Fails on raw whitespace"
+        }
       ]
     },
     {
       "id": "m2_c7",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match one or more whitespace characters.",
+      "prompt": "Normalize or detect multi-space padding between plain text words.",
       "ghostTemplate": "\\s+",
       "canonicalSolution": "\\s+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "hello   world", "shouldMatch": true, "description": "Multiple spaces" },
-        { "text": "helloworld", "shouldMatch": false, "description": "No spaces (fails \\s*, \\w+, \\D+, .*)" }
+        {
+          "text": "query   FROM users",
+          "shouldMatch": true,
+          "expected": "   ",
+          "description": "Matches triple-space block (blocks single \\s shortcut)"
+        },
+        {
+          "text": "key    =    value",
+          "shouldMatch": true,
+          "expected": "    ",
+          "description": "Matches 4-space padding around assignment operators"
+        },
+        {
+          "text": "single_token_without_spaces",
+          "shouldMatch": false,
+          "description": "Fails when no whitespace exists"
+        },
+        {
+          "text": "no_spaces_here!",
+          "shouldMatch": false,
+          "description": "Fails on non-whitespace punctuation"
+        }
       ]
     },
     {
       "id": "m2_c8",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a 4-digit PIN or year.",
+      "prompt": "Extract 4-digit security PIN blocks or timestamp years by matching exactly 4 consecutive digits.",
       "ghostTemplate": "\\d{4}",
       "canonicalSolution": "\\d{4}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "Year 2026", "shouldMatch": true, "description": "4-digit year" },
-        { "text": "123", "shouldMatch": false, "description": "3 digits only (fails \\d, \\d+)" },
-        { "text": "abcd", "shouldMatch": false, "description": "4 letters (fails \\w+, \\w{4})" }
+        {
+          "text": "Security PIN: 9182",
+          "shouldMatch": true,
+          "expected": "9182",
+          "description": "Extracts exact 4-digit security PIN"
+        },
+        {
+          "text": "Copyright year 2026",
+          "shouldMatch": true,
+          "expected": "2026",
+          "description": "Extracts 4-digit timestamp year"
+        },
+        {
+          "text": "PIN 808",
+          "shouldMatch": false,
+          "description": "Fails on 3-digit passcode"
+        }
       ]
     },
     {
       "id": "m2_c9",
-      "type": "compound",
-      "scaffold": "fading",
-      "prompt": "Match word characters with length 3 or more.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Extract key word tokens that are at least 3 characters long, ignoring short stop words.",
       "ghostTemplate": "\\w{3,}",
       "canonicalSolution": "\\w{3,}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "cat", "shouldMatch": true, "description": "3 word characters" },
-        { "text": "in", "shouldMatch": false, "description": "2 word characters (fails \\w, \\w+, \\w*)" },
-        { "text": "--", "shouldMatch": false, "description": "Hyphens only (fails .*, \\S+)" }
+        {
+          "text": "log_data_stream",
+          "shouldMatch": true,
+          "expected": "log_data_stream",
+          "description": "Matches entire word sequence longer than 3 chars"
+        },
+        {
+          "text": "payload_data",
+          "shouldMatch": true,
+          "expected": "payload_data",
+          "description": "Matches complete long word identifier"
+        },
+        {
+          "text": "id",
+          "shouldMatch": false,
+          "description": "Fails on 2-character word"
+        },
+        {
+          "text": "==",
+          "shouldMatch": false,
+          "description": "Fails on punctuation operators"
+        }
       ]
     },
     {
       "id": "m2_c10",
-      "type": "compound",
-      "scaffold": "fading",
-      "prompt": "Match zero or more spaces.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match zero or more whitespace characters to make surrounding spacing optional.",
       "ghostTemplate": "\\s*",
       "canonicalSolution": "\\s*",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "  ", "shouldMatch": true, "description": "Spaces present" },
-        { "text": "test", "shouldMatch": true, "description": "0 spaces matches empty position (forces * over + or \\s)" }
+        {
+          "text": "     ",
+          "shouldMatch": true,
+          "expected": "     ",
+          "description": "Matches active 5-space block"
+        },
+        {
+          "text": "  ",
+          "shouldMatch": true,
+          "expected": "  ",
+          "description": "Matches pair of spaces"
+        },
+        {
+          "text": "unpadded_string",
+          "shouldMatch": true,
+          "expected": "",
+          "description": "Zero whitespace matches zero-width boundary"
+        }
       ]
     },
     {
       "id": "m2_c11",
-      "type": "compound",
-      "scaffold": "fading",
-      "prompt": "Match one or more non-digit characters.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Isolate text titles or log tags by matching one or more non-digit characters.",
       "ghostTemplate": "\\D+",
       "canonicalSolution": "\\D+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "ABC", "shouldMatch": true, "description": "Non-digits" },
-        { "text": "12345", "shouldMatch": false, "description": "Digits only (fails \\D*, \\w+, .*, \\S+)" }
+        {
+          "text": "[ERROR_LOG]: failure",
+          "shouldMatch": true,
+          "expected": "[ERROR_LOG]: failure",
+          "description": "Matches entire non-numeric string (blocks single \\D shortcut)"
+        },
+        {
+          "text": "user_status_pending",
+          "shouldMatch": true,
+          "expected": "user_status_pending",
+          "description": "Matches full non-digit descriptive token"
+        },
+        {
+          "text": "9876543210",
+          "shouldMatch": false,
+          "description": "Fails on pure digit string"
+        },
+        {
+          "text": "000000",
+          "shouldMatch": false,
+          "description": "Fails on zero digit sequence"
+        }
       ]
     },
     {
       "id": "m2_c12",
-      "type": "compound",
-      "scaffold": "fading",
-      "prompt": "Match a 5-character word token.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Extract 5-character postal codes or fixed feature flag identifiers by matching exactly 5 consecutive word characters.",
       "ghostTemplate": "\\w{5}",
       "canonicalSolution": "\\w{5}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "hello", "shouldMatch": true, "description": "5 word characters" },
-        { "text": "code", "shouldMatch": false, "description": "4 characters only (fails \\w, \\w+)" },
-        { "text": "!!!!!", "shouldMatch": false, "description": "Symbols only (fails .{5}, \\S{5})" }
+        {
+          "text": "US Postal ZIP: 90210-0001",
+          "shouldMatch": true,
+          "expected": "90210",
+          "description": "Extracts exact 5-digit postal code 90210"
+        },
+        {
+          "text": "Feature flag BETA1 enabled in production",
+          "shouldMatch": true,
+          "expected": "BETA1",
+          "description": "Extracts 5-character feature flag token BETA1"
+        },
+        {
+          "text": "Code 9021",
+          "shouldMatch": false,
+          "description": "Fails on 4-character code"
+        },
+        {
+          "text": "#####",
+          "shouldMatch": false,
+          "description": "Fails on non-word symbol characters"
+        }
       ]
     },
     {
       "id": "m2_c13",
-      "type": "compound",
-      "scaffold": "fading",
-      "prompt": "Match between 2 and 4 digits.",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Extract HTTP server ports or build numbers restricted to between 2 and 4 digits.",
       "ghostTemplate": "\\d{2,4}",
       "canonicalSolution": "\\d{2,4}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "123", "shouldMatch": true, "description": "3 digits" },
-        { "text": "1", "shouldMatch": false, "description": "1 digit (fails \\d, \\d+)" },
-        { "text": "abcd", "shouldMatch": false, "description": "Letters (fails \\w{2,4})" }
+        {
+          "text": "Server listening on Port 8080",
+          "shouldMatch": true,
+          "expected": "8080",
+          "description": "Extracts 4-digit HTTP port number"
+        },
+        {
+          "text": "Release build 443",
+          "shouldMatch": true,
+          "expected": "443",
+          "description": "Extracts 3-digit port/build number"
+        },
+        {
+          "text": "Port 8",
+          "shouldMatch": false,
+          "description": "Fails on single digit port"
+        }
       ]
     },
     {
       "id": "m2_c14",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match one or more digits in sequence.",
+      "prompt": "Without a scaffold, construct a pattern to extract one or more contiguous digits.",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "ID 9982", "shouldMatch": true, "description": "Contains digit sequence" },
-        { "text": "none", "shouldMatch": false, "description": "No digits (fails \\d*, \\w+)" }
+        {
+          "text": "User session ID 883019",
+          "shouldMatch": true,
+          "expected": "883019",
+          "description": "Matches full session ID digits (blocks single \\d shortcut)"
+        },
+        {
+          "text": "Process PID 4092",
+          "shouldMatch": true,
+          "expected": "4092",
+          "description": "Matches complete process PID sequence"
+        },
+        {
+          "text": "Anonymous guest",
+          "shouldMatch": false,
+          "description": "Fails on string lacking numbers"
+        },
+        {
+          "text": "--- :: ---",
+          "shouldMatch": false,
+          "description": "Fails on symbol tokens"
+        }
       ]
     },
     {
       "id": "m2_c15",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match exactly 3 word characters.",
+      "prompt": "Without assistance, match exactly 3 consecutive word characters.",
       "canonicalSolution": "\\w{3}",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "dev", "shouldMatch": true, "description": "3 word characters" },
-        { "text": "hi", "shouldMatch": false, "description": "2 characters (fails \\w, \\w+)" },
-        { "text": "!@#", "shouldMatch": false, "description": "Symbols (fails .{3}, \\S{3})" }
+        {
+          "text": "api_v1_run",
+          "shouldMatch": true,
+          "expected": "api",
+          "description": "Extracts exactly 3 characters (blocks \\w+ or \\w{2,} over-matching)"
+        },
+        {
+          "text": "m2_c15_test",
+          "shouldMatch": true,
+          "expected": "m2_",
+          "description": "Extracts exact 3-character token block"
+        },
+        {
+          "text": "db",
+          "shouldMatch": false,
+          "description": "Fails on 2-character word"
+        },
+        {
+          "text": "!!!",
+          "shouldMatch": false,
+          "description": "Fails on special punctuation"
+        }
       ]
     },
     {
       "id": "m2_c16",
-      "type": "compound",
+      "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match one or more non-space characters.",
+      "prompt": "Match non-whitespace characters to isolate URLs, headers, or hash signatures.",
       "canonicalSolution": "\\S+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
-        { "text": "CodeReps", "shouldMatch": true, "description": "Non-space string" },
-        { "text": "    ", "shouldMatch": false, "description": "Spaces only (fails \\S*, \\w+, \\D+, .*)" }
+        {
+          "text": "https://api.v2.internal/health",
+          "shouldMatch": true,
+          "expected": "https://api.v2.internal/health",
+          "description": "Matches entire URL string without space (blocks single \\S shortcut)"
+        },
+        {
+          "text": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shouldMatch": true,
+          "expected": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "description": "Matches entire cryptographic hash"
+        },
+        {
+          "text": "   ",
+          "shouldMatch": false,
+          "description": "Fails on space characters"
+        },
+        {
+          "text": "\t\n",
+          "shouldMatch": false,
+          "description": "Fails on raw tab and newline characters"
+        }
       ]
     }
   ]
