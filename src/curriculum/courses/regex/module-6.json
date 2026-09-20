@@ -7,7 +7,25 @@
   "primer": {
     "syntaxToken": "(?=...), (?!...), (?<=...), (?<!...)",
     "definition": "Lookarounds inspect the text before or after the current position without 'consuming' characters into the match result. Positive lookahead (?=) and positive lookbehind (?<=) check for required presence; negative lookahead (?!) and negative lookbehind (?<!) check for required absence.",
-    "goldenRule": "Lookarounds are zero-width assertions: they assert conditions about adjacent text without advancing the regex matching engine's character index."
+    "goldenRule": "Lookarounds are zero-width assertions: they assert conditions about adjacent text without advancing the regex matching engine's character index.",
+    "mentalModel": "Think of a lookaround as a security guard standing at a doorway (the current position in the string) who peers through a window to check what's on the other side, then reports pass/fail without ever stepping through. Lookahead peers forward, lookbehind peers backward, and either way the guard's own footprint never lands in the match — the checked text is inspected, not consumed.",
+    "points": [
+      "Lookarounds are assertions, not captures: the text they inspect is never added to the overall match result, even though the engine reads it to decide pass/fail.",
+      "There are exactly four forms: positive lookahead (?=...), negative lookahead (?!...), positive lookbehind (?<=...), and negative lookbehind (?<!...).",
+      "Because lookarounds are zero-width, multiple lookaheads can be stacked at the same position (e.g. (?=.*[A-Z])(?=.*\\d)) to require several independent conditions without any of them advancing the match.",
+      "Lookbehind reads the text immediately before the current position; lookahead reads the text immediately after it — the direction is defined relative to the engine's current position, not relative to the rest of the pattern."
+    ],
+    "pitfalls": [
+      "Lookarounds are zero-width and consume nothing: chaining several lookaheads at the same position (e.g. stacked password rules) is valid and common, but forgetting this leads to double-counting characters that were never actually part of the match.",
+      "Lookbehind patterns must be fixed-length or bounded in most JS-compatible engines — a variable-length quantifier like (?<=a+) inside a lookbehind is not universally supported, and relying on it can break across engines/environments.",
+      "It's easy to confuse direction: (?=...) and (?<=...) describe what surrounds the current position, not what's inside the overall match — beginners often expect the lookahead's content to appear in the captured text and are surprised when it doesn't.",
+      "Like ordinary literals, lookaround content is case-sensitive by default. A negative lookahead written to block a specific word (e.g. (?!temp\\.com)) will silently let a differently-cased variant (TEMP.COM) through unless the pattern is normalized or the i flag is applied."
+    ],
+    "examples": [
+      { "pattern": "\\d+(?=%)", "match": "50", "note": "Positive lookahead matches digits only when immediately followed by '%', but '%' itself is not part of the match." },
+      { "pattern": "(?<!\\$)\\d+", "match": "100", "note": "Negative lookbehind matches digits only when NOT preceded by '$', so '$100' would not match at that position but a bare '100' would." },
+      { "pattern": "^(?=.*[A-Z])(?=.*\\d).+$", "match": "Pass1", "note": "Two positive lookaheads stacked at the start assert both an uppercase letter and a digit exist somewhere in the string, without either lookahead consuming characters." }
+    ]
   },
   "cards": [
     {
@@ -67,8 +85,8 @@
       "type": "atomic",
       "scaffold": "fading",
       "prompt": "Match lowercase letters only if followed by one or more digits strictly from start to end.",
-      "ghostTemplate": "^[a-z]+(?=\\d+)$",
-      "canonicalSolution": "^[a-z]+(?=\\d+)$",
+      "ghostTemplate": "^[a-z]+(?=\\d+)",
+      "canonicalSolution": "^[a-z]+(?=\\d+)",
       "testCases": [
         { "text": "item123", "shouldMatch": true },
         { "text": "user1", "shouldMatch": true },
@@ -123,8 +141,8 @@
       "type": "compound",
       "scaffold": "fading",
       "prompt": "Match integer digits strictly from start to end only if NOT ending with unit 'px'.",
-      "ghostTemplate": "^\\d+(?!px$)",
-      "canonicalSolution": "^\\d+(?!px$)",
+      "ghostTemplate": "^(?=(\\d+))\\1(?!px$)",
+      "canonicalSolution": "^(?=(\\d+))\\1(?!px$)",
       "testCases": [
         { "text": "100em", "shouldMatch": true },
         { "text": "100%", "shouldMatch": true },
@@ -137,8 +155,8 @@
       "type": "compound",
       "scaffold": "fading",
       "prompt": "Match word 'admin' strictly at word boundary only if NOT preceded by 'super_'.",
-      "ghostTemplate": "(?<!super_)\\badmin\\b",
-      "canonicalSolution": "(?<!super_)\\badmin\\b",
+      "ghostTemplate": "(?<!super_)admin\\b",
+      "canonicalSolution": "(?<!super_)admin\\b",
       "testCases": [
         { "text": "sys_admin", "shouldMatch": true },
         { "text": "admin", "shouldMatch": true },
@@ -264,7 +282,8 @@
         { "text": "StrongP1", "shouldMatch": true },
         { "text": "pass123", "shouldMatch": false },
         { "text": "SECUREPASS123", "shouldMatch": false },
-        { "text": "Short1A", "shouldMatch": false }
+        { "text": "Short1A", "shouldMatch": false },
+        { "text": "", "shouldMatch": false, "description": "Empty string fails every stacked lookahead plus the 8-character minimum." }
       ]
     },
     {
@@ -277,7 +296,8 @@
         { "text": "user@gmail.com", "shouldMatch": true },
         { "text": "admin@company.co.uk", "shouldMatch": true },
         { "text": "user@temp.com", "shouldMatch": false },
-        { "text": "bot@disposable.org", "shouldMatch": false }
+        { "text": "bot@disposable.org", "shouldMatch": false },
+        { "text": "user@TEMP.COM", "shouldMatch": true, "description": "Negative lookahead is case-sensitive by default — an uppercase domain evades the block, same address as the failing case above except for letter case." }
       ]
     },
     {

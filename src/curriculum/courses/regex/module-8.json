@@ -7,7 +7,25 @@
   "primer": {
     "syntaxToken": "Comprehensive Synthesis",
     "definition": "Real-world regex engineering requires combining character classes, quantifiers, anchors, groups, lookarounds, and lazy matching to build robust, edge-case-proof parsing logic.",
-    "goldenRule": "Always test complex patterns against boundary conditions and unexpected inputs to prevent catastrophic backtracking and false positives."
+    "goldenRule": "Always test complex patterns against boundary conditions and unexpected inputs to prevent catastrophic backtracking and false positives.",
+    "mentalModel": "Think of a capstone pattern as a machine assembled from every part you've forged in modules 1-7: character classes as the raw material, quantifiers and groups as the joints, anchors as the frame, and lookarounds/backreferences as the precision fasteners. A real-world validator rarely uses just one technique in isolation — it stacks them, and a weak joint anywhere (an unbounded nested quantifier, an unescaped metacharacter, a missing anchor) can make the whole machine seize up on hostile input even if it looks correct on friendly input.",
+    "points": [
+      "Real-world regexes almost always combine multiple techniques from earlier modules (classes, quantifiers, groups, anchors, lookarounds) in a single pattern rather than using one technique alone.",
+      "A pattern that passes every 'normal' test case can still be dangerously wrong: always add adversarial and boundary-condition test cases (empty strings, maximum-length strings, malformed near-misses) before trusting a capstone-level pattern.",
+      "Nested or overlapping quantifiers (e.g. `(a+)+`, `(a|a)*`, or alternation branches that can both match the same characters) can cause the regex engine's backtracking to grow exponentially with input length — this is called catastrophic backtracking or ReDoS (Regular Expression Denial of Service).",
+      "Rewriting a vulnerable pattern to be 'safe' usually means removing the ambiguity that lets the engine try the same substring in multiple ways — for example collapsing a nested quantifier into a single bounded one, or using a possessive/atomic construct where the engine supports it."
+    ],
+    "pitfalls": [
+      "Assuming a pattern is safe because it works on every hand-picked test string — catastrophic backtracking only shows up on adversarial input (e.g. a long run of a repeated character followed by one character that finally fails the match), so test suites that only include 'nice' inputs will never catch it.",
+      "Nesting a quantifier inside another quantifier over the same or overlapping character set (classic shape: `(x+)+`, `(x*)*`, `(x+)*`) gives the engine exponentially many ways to partition the same substring among the repetitions, so a failing match at the very end of the string can take exponential time to report as a failure.",
+      "Alternation branches inside a repeated group that can both match the same input (e.g. `(a|ab)+` matching against `abababab...c`) creates the same kind of ambiguity as nested quantifiers and is just as dangerous, even without literal nested `+`/`*` tokens.",
+      "This exact risk shape is already hiding in this module: `m8_c18`'s CSV-line validator uses a quantified alternation over an overlapping inner class (`(?:[^\"]|\"\")*` inside a group that is itself repeated with `(?:,...)*`) — it is a real-world example of the pattern family this module's pitfalls warn about, not just a textbook toy."
+    ],
+    "examples": [
+      { "pattern": "^(a+)+$", "match": "aaaa", "note": "Matches quickly on clean input, but a nested quantifier over the same character class means a non-matching adversarial string of the same shape can take exponential time to fail — this is the catastrophic-backtracking shape." },
+      { "pattern": "^a+$", "match": "aaaa", "note": "The safe rewrite: a single, unambiguous quantifier over the same character class matches the exact same set of valid strings but fails immediately (linear time) on non-matching input instead of exponentially backtracking." },
+      { "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", "match": "14:30:00", "note": "A well-formed real-world validator (24-hour time) combining alternation, bounded quantifiers, and anchors — each branch of every alternation is mutually exclusive, so there is no ambiguity for the engine to backtrack over." }
+    ]
   },
   "cards": [
     {
@@ -297,7 +315,7 @@
       "type": "compound",
       "scaffold": "blind",
       "prompt": "Extract Docker image name (group 1) and tag (group 2) supporting optional registry prefix strictly start to end.",
-      "canonicalSolution": "^(?:[a-z0-9.-]+\\/)?([a-z0-9_-]+):([a-z0-9._-]+)$",
+      "canonicalSolution": "^(?:[a-z0-9.-]+\\/)*([a-z0-9_-]+):([a-z0-9._-]+)$",
       "testCases": [
         { "text": "ubuntu:22.04", "shouldMatch": true },
         { "text": "ghcr.io/my-org/app:v1.2.0", "shouldMatch": true },
@@ -326,7 +344,32 @@
         { "text": "SELECT id, name FROM users;", "shouldMatch": true },
         { "text": "SELECT * FROM orders WHERE status = 'ACTIVE';", "shouldMatch": true },
         { "text": "INSERT INTO users VALUES (1);", "shouldMatch": false },
-        { "text": "SELECT * FROM users", "shouldMatch": false }
+        { "text": "SELECT * FROM users", "shouldMatch": false },
+        { "text": "select id, name from users;", "shouldMatch": false, "description": "Pattern requires the literal uppercase keywords SELECT/FROM — it is case-sensitive, so lowercase SQL is rejected." }
+      ]
+    },
+    {
+      "id": "m8_c25",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Demonstrate catastrophic backtracking: match one or more repetitions of the letter 'a', strictly start to end, using a nested quantifier `(a+)+` over the same character it repeats.",
+      "canonicalSolution": "^(a+)+$",
+      "testCases": [
+        { "text": "aaaa", "shouldMatch": true, "description": "Clean input matches quickly — the vulnerability is invisible here." },
+        { "text": "", "shouldMatch": false, "description": "Empty string: no repetitions of 'a' are present." },
+        { "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!", "shouldMatch": false, "skipLiveExecution": true, "description": "Adversarial input: 60 'a's followed by a non-matching '!' forces the engine to try exponentially many ways to partition the run of a's between the inner and outer + before it can report failure — this is catastrophic backtracking (ReDoS). Not executed live (skipLiveExecution) because running it synchronously would freeze the browser tab; shown here for reference only." }
+      ]
+    },
+    {
+      "id": "m8_c26",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Rewrite the vulnerable `(a+)+` pattern from the previous card as a safe, linear-time equivalent: match one or more repetitions of 'a', strictly start to end, using a single unambiguous quantifier instead of a nested one.",
+      "canonicalSolution": "^a+$",
+      "testCases": [
+        { "text": "aaaa", "shouldMatch": true, "description": "Matches the same valid strings as the vulnerable version." },
+        { "text": "", "shouldMatch": false, "description": "Empty string still correctly rejected." },
+        { "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!", "shouldMatch": false, "description": "Same adversarial input as the vulnerable card, but with only one quantifier over the character class there is no ambiguous partitioning to backtrack over — the engine fails immediately in linear time instead of exponentially." }
       ]
     }
   ]

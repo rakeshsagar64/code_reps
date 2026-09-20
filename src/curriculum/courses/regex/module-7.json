@@ -5,9 +5,28 @@
   "title": "Flags, Lazy Quantifiers & Complex Pattern Matching",
   "description": "Master execution flags, lazy quantifiers (`*?`, `+?`, `??`), and complex real-world string parsing while avoiding catastrophic backtracking.",
   "primer": {
-    "syntaxToken": "*?, +?, ??, /i, /m, /s",
-    "definition": "Lazy quantifiers (*?, +?, ??) match the shortest possible substring required to satisfy the expression instead of greedily expanding. Flags modify engine execution behavior globally across multiline strings, casing, and dot-matching capabilities.",
-    "goldenRule": "Use lazy quantifiers when capturing content bounded by explicit delimiters (like quotes, backticks, or HTML tags) to prevent over-matching across multiple adjacent occurrences."
+    "syntaxToken": "*?, +?, ??, /i, /m, /s, /u",
+    "definition": "Lazy quantifiers (*?, +?, ??) match the shortest possible substring required to satisfy the expression instead of greedily expanding. Flags modify engine execution behavior globally across the whole pattern: /i ignores letter case, /m changes where ^ and $ anchor, /s lets . match newlines, and /u switches the engine to full Unicode mode.",
+    "goldenRule": "Use lazy quantifiers when capturing content bounded by explicit delimiters (like quotes, backticks, or HTML tags) to prevent over-matching across multiple adjacent occurrences.",
+    "mentalModel": "Picture two independent dials on the regex engine. One dial controls each quantifier's appetite -- greedy quantifiers grab as much as possible then backtrack down, lazy quantifiers (`*?`, `+?`, `??`) grab as little as possible then expand only if forced. The other dial is a bank of switches you flip once per pattern -- flags like /i, /m, /s, /u -- that change how `.`, `^`, `$`, and character classes behave for the entire match, completely independent of which quantifiers you chose.",
+    "points": [
+      "Lazy quantifiers (*?, +?, ??) still backtrack like their greedy counterparts -- they just start from the minimum count and expand outward instead of starting from the maximum and shrinking inward.",
+      "Flags are set once per pattern (e.g. the second argument to `new RegExp(pattern, flags)`, or the letters after the closing slash in a /pattern/flags literal) and apply to the whole match, not to an individual token.",
+      "The i flag makes letter comparisons case-insensitive; the m flag makes ^ and $ match at every line boundary instead of only the start/end of the whole string; the s flag (dotAll) makes . match newline characters, which it otherwise never does; the u flag switches the engine to full Unicode mode, enabling \\p{...} property escapes and correct handling of astral characters.",
+      "Flags can be combined in any order in the same flags string, e.g. \"gim\" or \"su\"."
+    ],
+    "pitfalls": [
+      "Forgetting the m flag is the most common cause of a ^ or $ anchor silently failing on multi-line input -- without it, ^ and $ only match the very start and end of the entire string, not each line.",
+      "The s (dotAll) flag is easy to confuse with the m (multiline) flag -- s changes what `.` matches, m changes what `^`/`$` match; they solve different problems and are often needed together for multi-line block content.",
+      "Lazy quantifiers do not guarantee correctness by themselves -- `.*?` next to the wrong delimiter can still under-match or over-match; laziness only changes which match is returned when multiple are possible, not whether the pattern is otherwise correct.",
+      "Using \\p{...} unicode property escapes without the u flag is either a syntax error or silently treated as literal characters depending on the engine -- always pair \\p{...} with u."
+    ],
+    "examples": [
+      { "pattern": "<.+?>", "match": "<b>", "note": "Lazy + stops at the first '>' instead of consuming through the last '>' in a string with multiple tags." },
+      { "pattern": "hello", "flags": "i", "match": "HELLO", "note": "The i flag makes the literal match case-insensitively." },
+      { "pattern": "^\\d+$", "flags": "m", "match": "42", "note": "The m flag lets ^ and $ anchor to each line inside a multi-line string, instead of only the whole string's start and end." },
+      { "pattern": "a.b", "flags": "s", "match": "a\nb", "note": "The s flag makes '.' match the newline between 'a' and 'b', which it would otherwise skip." }
+    ]
   },
   "cards": [
     {
@@ -20,7 +39,8 @@
       "testCases": [
         { "text": "axxb", "shouldMatch": true },
         { "text": "ab", "shouldMatch": true },
-        { "text": "axx", "shouldMatch": false }
+        { "text": "axx", "shouldMatch": false },
+        { "text": "", "shouldMatch": false, "description": "Empty string cannot satisfy the literal 'a' and 'b' boundaries." }
       ]
     },
     {
@@ -54,8 +74,8 @@
       "type": "atomic",
       "scaffold": "fading",
       "prompt": "Match content inside single quotes lazily strictly from start to end.",
-      "ghostTemplate": "^'.*?'$",
-      "canonicalSolution": "^'.*?'$",
+      "ghostTemplate": "^'[^']*'$",
+      "canonicalSolution": "^'[^']*'$",
       "testCases": [
         { "text": "'hello'", "shouldMatch": true },
         { "text": "''", "shouldMatch": true },
@@ -186,8 +206,8 @@
       "type": "compound",
       "scaffold": "fading",
       "prompt": "Extract content inside parentheses '(...) ' lazily strictly from start to end.",
-      "ghostTemplate": "^\\(.*?\\)$",
-      "canonicalSolution": "^\\(.*?\\)$",
+      "ghostTemplate": "^\\([^()]*\\)$",
+      "canonicalSolution": "^\\([^()]*\\)$",
       "testCases": [
         { "text": "(value)", "shouldMatch": true },
         { "text": "()", "shouldMatch": true },
@@ -319,6 +339,62 @@
         { "text": "2026-09-07T11:08:50.123Z", "shouldMatch": true },
         { "text": "2026-09-07 11:08:50Z", "shouldMatch": false },
         { "text": "2026-09-07T11:08:50", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c25",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match the literal word 'hello' case-insensitively using the /i flag.",
+      "ghostTemplate": "hello",
+      "canonicalSolution": "hello",
+      "flags": "i",
+      "testCases": [
+        { "text": "HELLO", "shouldMatch": true, "description": "Matches uppercase text only because the i flag makes the pattern case-insensitive; without it, 'hello' would not match 'HELLO'." },
+        { "text": "Hello World", "shouldMatch": true },
+        { "text": "goodbye", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c26",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match the start of any line beginning with 'ERROR:' inside a multi-line log using ^ anchored per-line via the /m flag.",
+      "ghostTemplate": "^ERROR:",
+      "canonicalSolution": "^ERROR:",
+      "flags": "m",
+      "testCases": [
+        { "text": "INFO: ok\nERROR: fail\nINFO: done", "shouldMatch": true, "description": "^ matches right after each newline only because the m flag is set; without it, ^ only anchors to the very start of the whole string." },
+        { "text": "ERROR: fail", "shouldMatch": true },
+        { "text": "INFO: something ERROR: mid-line", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c27",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match content wrapped in '<<<' and '>>>' delimiters that may span multiple lines, using a lazy dot that matches newlines via the /s flag.",
+      "ghostTemplate": "<<<.*?>>>",
+      "canonicalSolution": "<<<.*?>>>",
+      "flags": "s",
+      "testCases": [
+        { "text": "<<<line one\nline two>>>", "shouldMatch": true, "description": ". matches the embedded newline only because the s (dotAll) flag is set; without it, . never matches \\n." },
+        { "text": "<<<single line>>>", "shouldMatch": true },
+        { "text": "<<<no closing delimiter", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m7_c28",
+      "type": "atomic",
+      "scaffold": "ghost",
+      "prompt": "Match one or more Unicode letters, including non-Latin scripts, using the \\p{L} unicode property escape, which requires the /u flag.",
+      "ghostTemplate": "^\\p{L}+$",
+      "canonicalSolution": "^\\p{L}+$",
+      "flags": "u",
+      "testCases": [
+        { "text": "日本語", "shouldMatch": true, "description": "\\p{L} matches these unicode letters only because the u flag enables unicode property escapes." },
+        { "text": "café", "shouldMatch": true },
+        { "text": "abc123", "shouldMatch": false }
       ]
     }
   ]

@@ -7,7 +7,25 @@
   "primer": {
     "syntaxToken": "(...), (?:...), \\1",
     "definition": "Parentheses create capturing groups (...) that store matched substrings in memory. Adding ?: creates a non-capturing group (?:...) for grouping without memory overhead. Backreferences (\\1, \\2) allow you to re-match whatever was captured in a previous group.",
-    "goldenRule": "Use non-capturing groups (?:...) when you only need logical grouping (like alternation or quantifiers) without capturing data into memory. Use backreferences (\\1) when a future part of your pattern must match the exact same value captured earlier."
+    "goldenRule": "Use non-capturing groups (?:...) when you only need logical grouping (like alternation or quantifiers) without capturing data into memory. Use backreferences (\\1) when a future part of your pattern must match the exact same value captured earlier.",
+    "mentalModel": "Think of a capturing group as a labeled sticky note the regex engine writes as it reads through your string. A backreference like \\1 tells the engine to peek back at that sticky note and demand the exact same text appear again -- it's a memory lookup, not a re-run of the original pattern.",
+    "points": [
+      "Groups are numbered left-to-right by their opening parenthesis, starting at 1; group 0 always refers to the entire match.",
+      "(?:...) groups for logic (alternation, quantifiers) without allocating a capture slot -- use it whenever you don't need to reference the matched text later.",
+      "A backreference \\1 re-matches the literal text captured by group 1, not the pattern that captured it -- (\\d{3})\\1 means 'the exact same three digits again', not 'any three more digits'.",
+      "Named groups (?<name>...) and named backreferences \\k<name> behave identically to numbered groups but make patterns self-documenting once a pattern has more than two or three groups."
+    ],
+    "pitfalls": [
+      "Confusing \\1 with repeating the pattern: (\\d{3})\\1 matches \"123123\", not any three digits followed by any three digits -- \\1 requires the exact same characters that were captured, not the same shape.",
+      "Backreferences are case-sensitive by default: (\\w)\\1 matches \"aa\" but not \"aA\" -- add the i flag if you want case-insensitive backreference matching.",
+      "A group inside an unmatched alternation branch or an optional quantifier (e.g. (?:(a)|b)) may never capture at all, leaving its backreference undefined rather than an empty string -- test every branch.",
+      "Named backreference syntax is easy to typo: \\k<name> (with the k) is required -- referencing it as \\<name> or \\name silently fails to work as intended in most engines."
+    ],
+    "examples": [
+      { "pattern": "(\\w+)@\\1\\.com", "match": "acme@acme.com", "note": "Backreference \\1 forces the domain label to repeat the exact username captured before the @" },
+      { "pattern": "(?<year>\\d{4})-\\d{2}-\\d{2}", "match": "2026-09-07", "note": "Named group 'year' captures 2026 for later reference via \\k<year>" },
+      { "pattern": "<(?<tag>[a-z]+)>.*?</\\k<tag>>", "match": "<p>hello</p>", "note": "Named backreference \\k<tag> ensures the closing tag matches whatever tag name was opened" }
+    ]
   },
   "cards": [
     {
@@ -103,7 +121,8 @@
         { "text": "\"hello\"", "shouldMatch": true },
         { "text": "'world'", "shouldMatch": true },
         { "text": "\"mismatched'", "shouldMatch": false },
-        { "text": "'hello\"", "shouldMatch": false }
+        { "text": "'hello\"", "shouldMatch": false },
+        { "text": "", "shouldMatch": false, "description": "Empty string has no opening quote to capture, so the \\1 backreference can never be satisfied" }
       ]
     },
     {
@@ -337,6 +356,47 @@
         { "text": "[2026-01-01] ERROR: Connection timed out", "shouldMatch": true },
         { "text": "[2026-09-07] WARN: Disk space low", "shouldMatch": false },
         { "text": "INFO: Missing timestamp bracket", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c25",
+      "type": "compound",
+      "scaffold": "fading",
+      "prompt": "Match a digit captured in a named group 'd', followed by a space and the same digit using the named backreference \\k<d>.",
+      "ghostTemplate": "(?<d>\\d) \\k<d>",
+      "canonicalSolution": "(?<d>\\d) \\k<d>",
+      "testCases": [
+        { "text": "5 5", "shouldMatch": true, "description": "Named group 'd' captures 5, \\k<d> re-matches it" },
+        { "text": "9 9", "shouldMatch": true },
+        { "text": "5 6", "shouldMatch": false, "description": "Second digit does not match what the named group captured" },
+        { "text": "a a", "shouldMatch": false, "description": "Named group requires a digit, not a letter" }
+      ]
+    },
+    {
+      "id": "m5_c26",
+      "type": "compound",
+      "scaffold": "blind",
+      "prompt": "Match HTML-style tags like <b>text</b> using a named group 'tag' for the tag name and \\k<tag> to ensure the closing tag matches it.",
+      "canonicalSolution": "<(?<tag>[a-z]+)>[^<]*</\\k<tag>>",
+      "testCases": [
+        { "text": "<b>bold</b>", "shouldMatch": true },
+        { "text": "<span>text</span>", "shouldMatch": true },
+        { "text": "<b>mismatch</i>", "shouldMatch": false, "description": "Closing tag name does not match the named capture 'tag'" },
+        { "text": "<div>content</span>", "shouldMatch": false }
+      ]
+    },
+    {
+      "id": "m5_c27",
+      "type": "atomic",
+      "scaffold": "fading",
+      "prompt": "Match two identical adjacent word characters using a capturing group and \\1 -- note that backreferences are case-sensitive by default.",
+      "ghostTemplate": "(\\w)\\1",
+      "canonicalSolution": "(\\w)\\1",
+      "testCases": [
+        { "text": "aa", "shouldMatch": true, "description": "Backreference matches the exact captured text, including case" },
+        { "text": "AA", "shouldMatch": true },
+        { "text": "aA", "shouldMatch": false, "description": "Without the i flag, \\1 requires an exact case match -- lowercase 'a' does not equal uppercase 'A'" },
+        { "text": "Aa", "shouldMatch": false }
       ]
     }
   ]
