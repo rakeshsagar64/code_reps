@@ -60,17 +60,18 @@
       "id": "m2_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract numeric transaction amounts or status codes by matching one or more contiguous digits.",
+      "prompt": "You are processing server log files to extract response codes and transaction amounts. Match one or more contiguous digits.",
+      "hint": "Combine the digit shorthand class with the quantifier that requires at least one repetition.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         {
-          "text": "HTTP/1.1 404 Not Found",
+          "text": "HTTP 404 Not Found",
           "shouldMatch": true,
           "expected": "404",
-          "description": "Matches contiguous error code digits (blocks single \\d shortcut)"
+          "description": "Matches contiguous error code digits"
         },
         {
           "text": "Order #89042 filled",
@@ -99,7 +100,8 @@
       "id": "m2_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match zero or more word characters to handle optional identifier suffixes or empty tokens.",
+      "prompt": "You are parsing database schema identifiers that may have optional alphanumeric suffixes. Match zero or more consecutive word characters.",
+      "hint": "Attach the quantifier for zero or more occurrences to the word character class.",
       "ghostTemplate": "\\w*",
       "canonicalSolution": "\\w*",
       "validatorType": "regex",
@@ -129,7 +131,8 @@
       "id": "m2_c3",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract 3-digit telecommunication area codes or HTTP response codes by matching exactly 3 consecutive digits.",
+      "prompt": "You are filtering telecom data streams for 3-digit area codes and HTTP status codes. Match exactly 3 consecutive digits.",
+      "hint": "Use explicit count curly braces with the digit class to set an exact repetition target.",
       "ghostTemplate": "\\d{3}",
       "canonicalSolution": "\\d{3}",
       "validatorType": "regex",
@@ -158,7 +161,8 @@
       "id": "m2_c4",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match variable identifiers restricted between 2 and 4 word characters.",
+      "prompt": "You are validating short username aliases in a user registration system. Match between 2 and 4 consecutive word characters.",
+      "hint": "Specify an inclusive range using curly braces directly after the word character token.",
       "ghostTemplate": "\\w{2,4}",
       "canonicalSolution": "\\w{2,4}",
       "validatorType": "regex",
@@ -168,7 +172,7 @@
           "text": "identifier_token",
           "shouldMatch": true,
           "expected": "iden",
-          "description": "Extracts max 4 characters (blocks \\w+ or \\w{2,} over-matching)"
+          "description": "Extracts max 4 characters"
         },
         {
           "text": "usr",
@@ -192,7 +196,8 @@
       "id": "m2_c5",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Isolate consecutive digit sequences inside mixed log messages or telemetry data.",
+      "prompt": "You are analyzing application telemetry logs to isolate millisecond latencies and retry counts. Match one or more contiguous digits.",
+      "hint": "Pair the digit token with the plus quantifier to capture entire numeric runs.",
       "ghostTemplate": "\\d+",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
@@ -202,7 +207,7 @@
           "text": "Latency recorded: 142ms",
           "shouldMatch": true,
           "expected": "142",
-          "description": "Matches full latency millisecond digits (blocks \\d shortcut)"
+          "description": "Matches full latency millisecond digits"
         },
         {
           "text": "Retry attempt #382 in progress",
@@ -226,7 +231,8 @@
       "id": "m2_c6",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match whole word tokens consisting of letters, numbers, and underscores.",
+      "prompt": "You are auditing audit trail logs for variable names and event identifiers. Match one or more consecutive word characters.",
+      "hint": "Use the word character class paired with the plus quantifier to capture full alphanumeric tokens.",
       "ghostTemplate": "\\w+",
       "canonicalSolution": "\\w+",
       "validatorType": "regex",
@@ -236,7 +242,7 @@
           "text": "system_event_2026",
           "shouldMatch": true,
           "expected": "system_event_2026",
-          "description": "Matches complete composite key identifier (blocks \\w shortcut)"
+          "description": "Matches complete composite key identifier"
         },
         {
           "text": "auth_token_v2",
@@ -260,7 +266,8 @@
       "id": "m2_c7",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Normalize or detect multi-space padding between plain text words.",
+      "prompt": "You are building a linter to detect excessive space padding between code tokens. Match one or more consecutive whitespace characters.",
+      "hint": "Combine the whitespace shorthand class with the quantifier for one or more repetitions.",
       "ghostTemplate": "\\s+",
       "canonicalSolution": "\\s+",
       "validatorType": "regex",
@@ -270,7 +277,7 @@
           "text": "query   FROM users",
           "shouldMatch": true,
           "expected": "   ",
-          "description": "Matches triple-space block (blocks single \\s shortcut)"
+          "description": "Matches triple-space block"
         },
         {
           "text": "key    =    value",
@@ -294,7 +301,8 @@
       "id": "m2_c8",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract 4-digit security PIN blocks or timestamp years by matching exactly 4 consecutive digits.",
+      "prompt": "You are extracting security authentication codes and publication years from raw text feeds. Match exactly 4 consecutive digits.",
+      "hint": "Set an exact quantifier count of 4 on the digit character class token.",
       "ghostTemplate": "\\d{4}",
       "canonicalSolution": "\\d{4}",
       "validatorType": "regex",
@@ -323,7 +331,8 @@
       "id": "m2_c9",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract key word tokens that are at least 3 characters long, ignoring short stop words.",
+      "prompt": "You are indexing document keywords while filtering out short 1- or 2-letter noise words. Match 3 or more consecutive word characters.",
+      "hint": "Use an open-ended quantifier range like {min,} on the word character token.",
       "ghostTemplate": "\\w{3,}",
       "canonicalSolution": "\\w{3,}",
       "validatorType": "regex",
@@ -357,7 +366,8 @@
       "id": "m2_c10",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match zero or more whitespace characters to make surrounding spacing optional.",
+      "prompt": "You are parsing flexible config files where spaces around equal signs are optional. Match zero or more consecutive whitespace characters.",
+      "hint": "Attach the zero-or-more quantifier to the whitespace shorthand token to allow optional spacing.",
       "ghostTemplate": "\\s*",
       "canonicalSolution": "\\s*",
       "validatorType": "regex",
@@ -387,7 +397,8 @@
       "id": "m2_c11",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Isolate text titles or log tags by matching one or more non-digit characters.",
+      "prompt": "You are cleaning structured logs by separating text labels from numeric IDs. Match one or more consecutive non-digit characters.",
+      "hint": "Use the capitalized non-digit shorthand class combined with the plus quantifier.",
       "ghostTemplate": "\\D+",
       "canonicalSolution": "\\D+",
       "validatorType": "regex",
@@ -397,7 +408,7 @@
           "text": "[ERROR_LOG]: failure",
           "shouldMatch": true,
           "expected": "[ERROR_LOG]: failure",
-          "description": "Matches entire non-numeric string (blocks single \\D shortcut)"
+          "description": "Matches entire non-numeric string"
         },
         {
           "text": "user_status_pending",
@@ -421,7 +432,8 @@
       "id": "m2_c12",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract 5-character postal codes or fixed feature flag identifiers by matching exactly 5 consecutive word characters.",
+      "prompt": "You are parsing postal address records and feature flags. Match exactly 5 consecutive word characters.",
+      "hint": "Specify an exact repetition count of 5 using curly braces after the word shorthand class.",
       "ghostTemplate": "\\w{5}",
       "canonicalSolution": "\\w{5}",
       "validatorType": "regex",
@@ -455,7 +467,8 @@
       "id": "m2_c13",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Extract HTTP server ports or build numbers restricted to between 2 and 4 digits.",
+      "prompt": "You are extracting network port numbers and build IDs from deployment manifests. Match between 2 and 4 consecutive digits.",
+      "hint": "Apply range syntax {min,max} directly to the digit shorthand token.",
       "ghostTemplate": "\\d{2,4}",
       "canonicalSolution": "\\d{2,4}",
       "validatorType": "regex",
@@ -484,7 +497,8 @@
       "id": "m2_c14",
       "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Without a scaffold, construct a pattern to extract one or more contiguous digits.",
+      "prompt": "You are extracting system process IDs (PIDs) and active session tokens from trace logs. Match one or more contiguous digits.",
+      "hint": "Recall how to pair the shorthand digit token with the one-or-more repetition quantifier.",
       "canonicalSolution": "\\d+",
       "validatorType": "regex",
       "flags": "g",
@@ -493,7 +507,7 @@
           "text": "User session ID 883019",
           "shouldMatch": true,
           "expected": "883019",
-          "description": "Matches full session ID digits (blocks single \\d shortcut)"
+          "description": "Matches full session ID digits"
         },
         {
           "text": "Process PID 4092",
@@ -517,7 +531,8 @@
       "id": "m2_c15",
       "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Without assistance, match exactly 3 consecutive word characters.",
+      "prompt": "You are extracting 3-letter service prefixes from system routing keys. Match exactly 3 consecutive word characters.",
+      "hint": "Apply an exact count quantifier of 3 to the word character shorthand class.",
       "canonicalSolution": "\\w{3}",
       "validatorType": "regex",
       "flags": "g",
@@ -526,7 +541,7 @@
           "text": "api_v1_run",
           "shouldMatch": true,
           "expected": "api",
-          "description": "Extracts exactly 3 characters (blocks \\w+ or \\w{2,} over-matching)"
+          "description": "Extracts exactly 3 characters"
         },
         {
           "text": "m2_c15_test",
@@ -550,7 +565,8 @@
       "id": "m2_c16",
       "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match non-whitespace characters to isolate URLs, headers, or hash signatures.",
+      "prompt": "You are parsing security reports to extract full endpoint URLs and cryptographic hashes. Match one or more consecutive non-whitespace characters.",
+      "hint": "Combine the uppercase non-whitespace character class with the plus quantifier.",
       "canonicalSolution": "\\S+",
       "validatorType": "regex",
       "flags": "g",
@@ -559,7 +575,7 @@
           "text": "https://api.v2.internal/health",
           "shouldMatch": true,
           "expected": "https://api.v2.internal/health",
-          "description": "Matches entire URL string without space (blocks single \\S shortcut)"
+          "description": "Matches entire URL string without space"
         },
         {
           "text": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

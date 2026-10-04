@@ -59,14 +59,15 @@
       "id": "m1_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match any single digit.",
+      "prompt": "You are parsing raw inventory logs to locate single item quantities. Match any single numeric digit in the input.",
+      "hint": "Use the standard digit shorthand token to target any single number from 0 to 9.",
       "ghostTemplate": "\\d",
       "canonicalSolution": "\\d",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "7", "shouldMatch": true, "description": "Single digit 7" },
-        { "text": "3", "shouldMatch": true, "description": "Single digit 3 (blocks literal '7')" },
+        { "text": "3", "shouldMatch": true, "description": "Single digit 3" },
         { "text": "A", "shouldMatch": false, "description": "Letter" },
         { "text": "_", "shouldMatch": false, "description": "Underscore" },
         { "text": " ", "shouldMatch": false, "description": "Space" }
@@ -76,15 +77,16 @@
       "id": "m1_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match any word character (letters, digits, underscore).",
+      "prompt": "You are validating field names in a database schema. Match any single word character (letters, numbers, or underscores).",
+      "hint": "Use the word character shorthand to match an ASCII letter, digit, or underscore.",
       "ghostTemplate": "\\w",
       "canonicalSolution": "\\w",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "a", "shouldMatch": true, "description": "Lowercase letter" },
-        { "text": "9", "shouldMatch": true, "description": "Digit (blocks [a-z])" },
-        { "text": "_", "shouldMatch": true, "description": "Underscore (blocks [a-zA-Z0-9])" },
+        { "text": "9", "shouldMatch": true, "description": "Digit" },
+        { "text": "_", "shouldMatch": true, "description": "Underscore" },
         { "text": "!", "shouldMatch": false, "description": "Punctuation" },
         { "text": " ", "shouldMatch": false, "description": "Whitespace" }
       ]
@@ -93,7 +95,8 @@
       "id": "m1_c3",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Use the whitespace shorthand character class to match any space, tab, or newline.",
+      "prompt": "You are building a text cleanup tool to detect layout formatting. Match any single whitespace character, including spaces, tabs, or newlines.",
+      "hint": "Use the whitespace shorthand token to detect any single space, tab, or newline character.",
       "ghostTemplate": "\\s",
       "canonicalSolution": "\\s",
       "validatorType": "regex",
@@ -102,7 +105,7 @@
         { "text": " ", "shouldMatch": true, "description": "Single space" },
         { "text": "\t", "shouldMatch": true, "description": "Tab character" },
         { "text": "\n", "shouldMatch": true, "description": "Newline character" },
-        { "text": "!", "shouldMatch": false, "description": "Punctuation (blocks \\W false positive)" },
+        { "text": "!", "shouldMatch": false, "description": "Punctuation symbol" },
         { "text": "a", "shouldMatch": false, "description": "Letter" },
         { "text": "1", "shouldMatch": false, "description": "Digit" }
       ]
@@ -111,22 +114,24 @@
       "id": "m1_c4",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match any digit in a string.",
+      "prompt": "You are extracting review scores from customer feedback text. Match any single digit embedded inside a string.",
+      "hint": "Target numeric characters inside a sentence by applying the digit character class.",
       "ghostTemplate": "\\d",
       "canonicalSolution": "\\d",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "Item 9", "shouldMatch": true, "description": "Contains digit 9" },
-        { "text": "Item 4", "shouldMatch": true, "description": "Contains digit 4 (blocks literal '9')" },
-        { "text": "Item Nine", "shouldMatch": false, "description": "No digits" }
+        { "text": "Item 4", "shouldMatch": true, "description": "Contains digit 4" },
+        { "text": "Item Nine", "shouldMatch": false, "description": "No digits present" }
       ]
     },
     {
       "id": "m1_c5",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a word character.",
+      "prompt": "You are parsing key-value pairs in a config file. Match any single valid key character (letters, digits, or underscores) while rejecting special symbols.",
+      "hint": "Use the word shorthand class to capture valid identifiers while excluding symbols like @ or spaces.",
       "ghostTemplate": "\\w",
       "canonicalSolution": "\\w",
       "validatorType": "regex",
@@ -135,7 +140,7 @@
         { "text": "Z", "shouldMatch": true, "description": "Uppercase letter" },
         { "text": "5", "shouldMatch": true, "description": "Digit" },
         { "text": "_", "shouldMatch": true, "description": "Underscore" },
-        { "text": "@", "shouldMatch": false, "description": "Symbol (blocks \\S false positive)" },
+        { "text": "@", "shouldMatch": false, "description": "Special symbol" },
         { "text": " ", "shouldMatch": false, "description": "Space" }
       ]
     },
@@ -143,7 +148,8 @@
       "id": "m1_c6",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match a non-digit character.",
+      "prompt": "You are cleaning up phone numbers by stripping non-numeric formatting characters. Match any single non-digit character.",
+      "hint": "Invert a character class by capitalizing the shorthand token—use the uppercase shorthand for non-digits.",
       "ghostTemplate": "\\D",
       "canonicalSolution": "\\D",
       "validatorType": "regex",
@@ -151,7 +157,7 @@
       "testCases": [
         { "text": "A", "shouldMatch": true, "description": "Letter is non-digit" },
         { "text": " ", "shouldMatch": true, "description": "Space is non-digit" },
-        { "text": "#", "shouldMatch": true, "description": "Symbol is non-digit (blocks \\w)" },
+        { "text": "#", "shouldMatch": true, "description": "Symbol is non-digit" },
         { "text": "7", "shouldMatch": false, "description": "Digit 7" },
         { "text": "0", "shouldMatch": false, "description": "Digit 0" }
       ]
@@ -160,13 +166,14 @@
       "id": "m1_c7",
       "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match a single digit without ghost prompt.",
+      "prompt": "You are extracting numeric verification codes from SMS messages. Match any single digit.",
+      "hint": "Recall the single shorthand character class that represents any digit from 0 to 9.",
       "canonicalSolution": "\\d",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "5", "shouldMatch": true, "description": "Single digit 5" },
-        { "text": "2", "shouldMatch": true, "description": "Single digit 2 (blocks literal '5')" },
+        { "text": "2", "shouldMatch": true, "description": "Single digit 2" },
         { "text": "X", "shouldMatch": false, "description": "Non-digit letter" },
         { "text": "#", "shouldMatch": false, "description": "Symbol" }
       ]
@@ -175,13 +182,14 @@
       "id": "m1_c8",
       "type": "atomic",
       "scaffold": "blind",
-      "prompt": "Match a word character without ghost prompt.",
+      "prompt": "You are building a custom search indexer. Match any single word character (letters, numbers, or underscores).",
+      "hint": "Write the single character class token that matches letters, digits, and underscores.",
       "canonicalSolution": "\\w",
       "validatorType": "regex",
       "flags": "g",
       "testCases": [
         { "text": "x", "shouldMatch": true, "description": "Letter" },
-        { "text": "_", "shouldMatch": true, "description": "Underscore (blocks [a-z])" },
+        { "text": "_", "shouldMatch": true, "description": "Underscore" },
         { "text": "8", "shouldMatch": true, "description": "Digit" },
         { "text": "-", "shouldMatch": false, "description": "Hyphen" },
         { "text": " ", "shouldMatch": false, "description": "Space" }

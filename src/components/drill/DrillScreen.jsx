@@ -176,9 +176,10 @@ export function DrillScreen({ module, validatorType = 'regex', onClose, onComple
         </section>
 
         {/* RIGHT COLUMN: Test Cases + Action Button */}
+        {/* RIGHT COLUMN: Test Cases + Action Button */}
         <section className="drill-panel right-panel">
           <div className="test-cases-wrapper">
-            <LiveTestCaseList testCases={testCases} userInput={userPattern} />
+            <LiveTestCaseList testCases={testCases} userInput={userPattern} card={currentCard} />
           </div>
 
           <button

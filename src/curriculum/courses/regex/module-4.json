@@ -43,362 +43,359 @@
       "id": "m4_c1",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Group characters 'ab' into a single unit using ().",
+      "prompt": "Bundle the text sequence 'ab' into a single reusable unit so it can be treated as a single token. Capture 'ab' in Group 1.",
+      "hint": "Wrap the exact characters inside parentheses: (ab).",
       "ghostTemplate": "(ab)",
       "canonicalSolution": "(ab)",
       "testCases": [
-        { "text": "ab", "shouldMatch": true },
-        { "text": "a", "shouldMatch": false },
-        { "text": "b", "shouldMatch": false }
+        { "text": "ab", "shouldMatch": true, "expected": "ab", "expectedGroups": ["ab"] },
+        { "text": "a", "shouldMatch": false, "description": "Rejects incomplete match missing 'b'" },
+        { "text": "b", "shouldMatch": false, "description": "Rejects incomplete match missing 'a'" },
+        { "text": "ba", "shouldMatch": false, "description": "Rejects reversed character sequence" }
       ]
     },
     {
       "id": "m4_c2",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Group 3 digits together.",
+      "prompt": "Isolate a 3-digit security code block into a single capture group so the numeric value can be extracted.",
+      "hint": "Combine the digit token \\d{3} inside parentheses: (\\d{3}).",
       "ghostTemplate": "(\\d{3})",
       "canonicalSolution": "(\\d{3})",
       "testCases": [
-        { "text": "123", "shouldMatch": true },
-        { "text": "12", "shouldMatch": false },
-        { "text": "abc", "shouldMatch": false }
+        { "text": "123", "shouldMatch": true, "expected": "123", "expectedGroups": ["123"] },
+        { "text": "12", "shouldMatch": false, "description": "Rejects codes shorter than 3 digits" },
+        { "text": "abc", "shouldMatch": false, "description": "Rejects non-numeric input" }
       ]
     },
     {
       "id": "m4_c3",
       "type": "atomic",
       "scaffold": "ghost",
-      "prompt": "Match either 'cat' or 'dog' using alternation inside a group.",
+      "prompt": "Filter animal records by matching either 'cat' or 'dog', scoping the choice inside a single group and capturing the matched animal name.",
+      "hint": "Use the vertical bar | inside parentheses: (cat|dog).",
       "ghostTemplate": "(cat|dog)",
       "canonicalSolution": "(cat|dog)",
       "testCases": [
-        { "text": "cat", "shouldMatch": true },
-        { "text": "dog", "shouldMatch": true },
-        { "text": "fish", "shouldMatch": false },
-        { "text": "bird", "shouldMatch": false }
+        { "text": "cat", "shouldMatch": true, "expected": "cat", "expectedGroups": ["cat"] },
+        { "text": "dog", "shouldMatch": true, "expected": "dog", "expectedGroups": ["dog"] },
+        { "text": "cog", "shouldMatch": false, "description": "Rejects invalid hybrid words" },
+        { "text": "fish", "shouldMatch": false, "description": "Rejects unlisted animals" }
       ]
     },
     {
       "id": "m4_c4",
       "type": "atomic",
       "scaffold": "fading",
-      "prompt": "Repeat a grouped pair of digits exactly two times.",
-      "ghostTemplate": "(\\d{2}){2}",
-      "canonicalSolution": "(\\d{2}){2}",
+      "prompt": "Validate a 4-digit security token structured as two repeated 2-digit pairs, matching strictly from start to end. Capture the final repeated pair in Group 1.",
+      "hint": "Group two digits with (\\d{2}), apply {2} to repeat the group, and anchor with ^ and $.",
+      "ghostTemplate": "^(\\d{2}){2}$",
+      "canonicalSolution": "^(\\d{2}){2}$",
       "testCases": [
-        { "text": "1234", "shouldMatch": true },
-        { "text": "12", "shouldMatch": false },
-        { "text": "123", "shouldMatch": false },
-        { "text": "abcd", "shouldMatch": false }
+        { "text": "1234", "shouldMatch": true, "expected": "1234", "expectedGroups": ["34"] },
+        { "text": "prefix_1234", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "1234_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "123", "shouldMatch": false, "description": "Rejects sequences with fewer than 4 total digits" }
       ]
     },
     {
       "id": "m4_c5",
       "type": "atomic",
       "scaffold": "fading",
-      "prompt": "Match 'LOG' or 'ERR' inside a group.",
+      "prompt": "Identify high-priority log events by matching either 'LOG' or 'ERR', capturing the level name in Group 1.",
+      "hint": "Scope the options using (LOG|ERR).",
       "ghostTemplate": "(LOG|ERR)",
       "canonicalSolution": "(LOG|ERR)",
       "testCases": [
-        { "text": "LOG", "shouldMatch": true },
-        { "text": "ERR", "shouldMatch": true },
-        { "text": "INFO", "shouldMatch": false },
-        { "text": "WARN", "shouldMatch": false }
+        { "text": "LOG", "shouldMatch": true, "expected": "LOG", "expectedGroups": ["LOG"] },
+        { "text": "ERR", "shouldMatch": true, "expected": "ERR", "expectedGroups": ["ERR"] },
+        { "text": "DBG", "shouldMatch": false, "description": "Rejects non-matching log levels" }
       ]
     },
     {
       "id": "m4_c6",
       "type": "atomic",
       "scaffold": "fading",
-      "prompt": "Match an optional group containing 'v' followed by one or more digits strictly from start to end.",
-      "ghostTemplate": "^(v\\d+)?$",
-      "canonicalSolution": "^(v\\d+)?$",
+      "prompt": "Validate software version tags that start with 'v' or 'ver' followed by one or more build digits, strictly from start to end. Capture the version prefix ('v' or 'ver') in Group 1.",
+      "hint": "Anchor with ^ and $, group the prefix options with (v|ver), and follow with \\d+.",
+      "ghostTemplate": "^(v|ver)\\d+$",
+      "canonicalSolution": "^(v|ver)\\d+$",
       "testCases": [
-        { "text": "v2", "shouldMatch": true },
-        { "text": "v10", "shouldMatch": true },
-        { "text": "", "shouldMatch": true },
-        { "text": "version2", "shouldMatch": false },
-        { "text": "v", "shouldMatch": false }
+        { "text": "v2", "shouldMatch": true, "expected": "v2", "expectedGroups": ["v"] },
+        { "text": "ver10", "shouldMatch": true, "expected": "ver10", "expectedGroups": ["ver"] },
+        { "text": "prefix_v2", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "v2_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "version2", "shouldMatch": false, "description": "Rejects unlisted prefixes" }
       ]
     },
     {
       "id": "m4_c7",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string starting with grouped HTTP methods 'GET' or 'POST'.",
+      "prompt": "Filter incoming HTTP requests by matching lines starting with either 'GET' or 'POST'. Capture the method name in Group 1.",
+      "hint": "Anchor at the start with ^ and scope method options inside (GET|POST).",
       "ghostTemplate": "^(GET|POST)",
       "canonicalSolution": "^(GET|POST)",
       "testCases": [
-        { "text": "GET /api/v1", "shouldMatch": true },
-        { "text": "POST /submit", "shouldMatch": true },
-        { "text": "PUT /api/v1", "shouldMatch": false },
-        { "text": "DELETE /user", "shouldMatch": false },
-        { "text": "TARGET /GET", "shouldMatch": false },
-        { "text": "get /api/v1", "shouldMatch": false, "description": "Alternation inside the group is case-sensitive by default — lowercase 'get' does not match 'GET' without an i flag." },
-        { "text": "post /submit", "shouldMatch": false, "description": "Same case-sensitivity contrast for the 'POST' alternative." }
+        { "text": "GET /api/v1", "shouldMatch": true, "expected": "GET", "expectedGroups": ["GET"] },
+        { "text": "POST /submit", "shouldMatch": true, "expected": "POST", "expectedGroups": ["POST"] },
+        { "text": "prefix_GET /api", "shouldMatch": false, "description": "Enforces ^ anchor at line start" },
+        { "text": "PUT /api/v1", "shouldMatch": false, "description": "Rejects unlisted HTTP methods" }
       ]
     },
     {
       "id": "m4_c8",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match key-value assignment with a grouped word key and integer value strictly from start to end.",
+      "prompt": "Parse configuration settings formatted as key=value strictly from start to end. Capture the word key in Group 1 and the numeric value in Group 2.",
+      "hint": "Anchor line with ^ and $, use (\\w+) for the key, = for separator, and (\\d+) for value.",
       "ghostTemplate": "^(\\w+)=(\\d+)$",
       "canonicalSolution": "^(\\w+)=(\\d+)$",
       "testCases": [
-        { "text": "port=8080", "shouldMatch": true },
-        { "text": "timeout=30", "shouldMatch": true },
-        { "text": "port=eight", "shouldMatch": false },
-        { "text": "port=", "shouldMatch": false },
-        { "text": "8080=port", "shouldMatch": false }
+        { "text": "port=8080", "shouldMatch": true, "expected": "port=8080", "expectedGroups": ["port", "8080"] },
+        { "text": " #port=8080", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "port=8080_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "port=eight", "shouldMatch": false, "description": "Rejects non-numeric values" }
       ]
     },
     {
       "id": "m4_c9",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match line starting with grouped log level prefix '[INFO]' or '[WARN]'.",
+      "prompt": "Parse log file entries starting with '[INFO]' or '[WARN]'. Capture only the inner level name ('INFO' or 'WARN') in Group 1, leaving out the square brackets.",
+      "hint": "Anchor with ^, escape brackets as \\[\\] and scope the text inside: \\[(INFO|WARN)\\].",
       "ghostTemplate": "^\\[(INFO|WARN)\\]",
       "canonicalSolution": "^\\[(INFO|WARN)\\]",
       "testCases": [
-        { "text": "[INFO] System up", "shouldMatch": true },
-        { "text": "[WARN] Low disk space", "shouldMatch": true },
-        { "text": "[ERROR] Failed", "shouldMatch": false },
-        { "text": "[DEBUG] Tracing", "shouldMatch": false },
-        { "text": "INFO System up", "shouldMatch": false }
+        { "text": "[INFO] System up", "shouldMatch": true, "expected": "[INFO]", "expectedGroups": ["INFO"] },
+        { "text": "[WARN] Low disk space", "shouldMatch": true, "expected": "[WARN]", "expectedGroups": ["WARN"] },
+        { "text": "prefix_[INFO] System up", "shouldMatch": false, "description": "Enforces ^ anchor at line start" },
+        { "text": "[ERROR] Failed", "shouldMatch": false, "description": "Rejects unlisted log levels" }
       ]
     },
     {
       "id": "m4_c10",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match date format DD-MM-YYYY using digit groups strictly from start to end.",
+      "prompt": "Parse date strings in DD-MM-YYYY format strictly from start to end. Capture the 2-digit day in Group 1, the 2-digit month in Group 2, and the 4-digit year in Group 3.",
+      "hint": "Use three independent digit groups (\\d{2}), (\\d{2}), and (\\d{4}) separated by hyphens and anchored with ^ and $.",
       "ghostTemplate": "^(\\d{2})-(\\d{2})-(\\d{4})$",
       "canonicalSolution": "^(\\d{2})-(\\d{2})-(\\d{4})$",
       "testCases": [
-        { "text": "15-08-2026", "shouldMatch": true },
-        { "text": "01-01-2000", "shouldMatch": true },
-        { "text": "15-8-2026", "shouldMatch": false },
-        { "text": "15-08-26", "shouldMatch": false },
-        { "text": "15/08/2026", "shouldMatch": false }
+        { "text": "15-08-2026", "shouldMatch": true, "expected": "15-08-2026", "expectedGroups": ["15", "08", "2026"] },
+        { "text": "prefix_15-08-2026", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "15-08-2026_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "15/08/2026", "shouldMatch": false, "description": "Rejects invalid slash delimiters" }
       ]
     },
     {
       "id": "m4_c11",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match string ending with a grouped image file extension (.png, .jpg, or .gif).",
+      "prompt": "Validate image upload paths by matching filenames ending with '.png', '.jpg', or '.gif'. Capture the extension name (excluding the leading dot) in Group 1 at the end of the line.",
+      "hint": "Escape the dot with \\. and scope extension options inside (png|jpg|gif) anchored with $.",
       "ghostTemplate": "\\.(png|jpg|gif)$",
       "canonicalSolution": "\\.(png|jpg|gif)$",
       "testCases": [
-        { "text": "avatar.png", "shouldMatch": true },
-        { "text": "photo.jpg", "shouldMatch": true },
-        { "text": "animation.gif", "shouldMatch": true },
-        { "text": "document.pdf", "shouldMatch": false },
-        { "text": "png.txt", "shouldMatch": false }
+        { "text": "avatar.png", "shouldMatch": true, "expected": ".png", "expectedGroups": ["png"] },
+        { "text": "photo.jpg", "shouldMatch": true, "expected": ".jpg", "expectedGroups": ["jpg"] },
+        { "text": "avatar.png_suffix", "shouldMatch": false, "description": "Enforces $ anchor at line end" },
+        { "text": "document.pdf", "shouldMatch": false, "description": "Rejects non-image file extensions" }
       ]
     },
     {
       "id": "m4_c12",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match URL starting with 'http' or 'https' followed by '://'.",
+      "prompt": "Validate web addresses starting with 'http://' or 'https://'. Capture the protocol scheme ('http' or 'https') in Group 1 at the start of the line.",
+      "hint": "Anchor at start with ^, group protocol options (http|https), and follow with ://.",
       "ghostTemplate": "^(http|https)://",
       "canonicalSolution": "^(http|https)://",
       "testCases": [
-        { "text": "https://example.com", "shouldMatch": true },
-        { "text": "http://localhost", "shouldMatch": true },
-        { "text": "ftp://server.com", "shouldMatch": false },
-        { "text": "ws://socket.io", "shouldMatch": false },
-        { "text": "http//missing-colon", "shouldMatch": false }
+        { "text": "https://example.com", "shouldMatch": true, "expected": "https://", "expectedGroups": ["https"] },
+        { "text": "http://localhost", "shouldMatch": true, "expected": "http://", "expectedGroups": ["http"] },
+        { "text": "prefix_https://example.com", "shouldMatch": false, "description": "Enforces ^ anchor at line start" },
+        { "text": "ftp://server.com", "shouldMatch": false, "description": "Rejects non-HTTP protocols" }
       ]
     },
     {
       "id": "m4_c13",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match a repeated pattern of 2 digits and a dot 3 times strictly from start to end.",
+      "prompt": "Validate a segmented sequence consisting of a 2-digit number followed by a dot, repeated exactly 3 times strictly from start to end. Capture the final repeated segment in Group 1.",
+      "hint": "Group 2 digits and an escaped dot (\\d{2}\\.), apply {3}, and anchor with ^ and $.",
       "ghostTemplate": "^(\\d{2}\\.){3}$",
       "canonicalSolution": "^(\\d{2}\\.){3}$",
       "testCases": [
-        { "text": "10.20.30.", "shouldMatch": true },
-        { "text": "99.88.77.", "shouldMatch": true },
-        { "text": "10.20.", "shouldMatch": false },
-        { "text": "10.20.30", "shouldMatch": false },
-        { "text": "1.2.3.", "shouldMatch": false }
+        { "text": "10.20.30.", "shouldMatch": true, "expected": "10.20.30.", "expectedGroups": ["30."] },
+        { "text": "prefix_10.20.30.", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "10.20.30._suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "10.20.", "shouldMatch": false, "description": "Rejects sequences with fewer than 3 repetitions" }
       ]
     },
     {
       "id": "m4_c14",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match prefix 'ID' or 'CODE' followed by a hyphen and 4 digits strictly from start to end.",
+      "prompt": "Validate employee identification badges starting with prefix 'ID' or 'CODE' followed by a hyphen and 4 digits, strictly from start to end. Capture the prefix in Group 1.",
+      "hint": "Scope prefix options with (ID|CODE), add hyphen -, follow with \\d{4}, and anchor with ^ and $.",
       "ghostTemplate": "^(ID|CODE)-\\d{4}$",
       "canonicalSolution": "^(ID|CODE)-\\d{4}$",
       "testCases": [
-        { "text": "CODE-1982", "shouldMatch": true },
-        { "text": "ID-0001", "shouldMatch": true },
-        { "text": "USER-1982", "shouldMatch": false },
-        { "text": "CODE-198", "shouldMatch": false },
-        { "text": "ID1982", "shouldMatch": false }
+        { "text": "CODE-1982", "shouldMatch": true, "expected": "CODE-1982", "expectedGroups": ["CODE"] },
+        { "text": "ID-0001", "shouldMatch": true, "expected": "ID-0001", "expectedGroups": ["ID"] },
+        { "text": "prefix_CODE-1982", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "CODE-1982_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "USER-1982", "shouldMatch": false, "description": "Rejects unlisted ID prefixes" }
       ]
     },
     {
       "id": "m4_c15",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match 24-hour time format HH:MM using 2-digit groups strictly from start to end.",
+      "prompt": "Parse 24-hour timestamps in HH:MM format strictly from start to end. Capture the 2-digit hour in Group 1 and the 2-digit minute in Group 2.",
+      "hint": "Group hours (\\d{2}) and minutes (\\d{2}) separated by a colon :, anchored with ^ and $.",
       "ghostTemplate": "^(\\d{2}):(\\d{2})$",
       "canonicalSolution": "^(\\d{2}):(\\d{2})$",
       "testCases": [
-        { "text": "09:30", "shouldMatch": true },
-        { "text": "23:59", "shouldMatch": true },
-        { "text": "9:30", "shouldMatch": false },
-        { "text": "09-30", "shouldMatch": false },
-        { "text": "09:30:00", "shouldMatch": false }
+        { "text": "09:30", "shouldMatch": true, "expected": "09:30", "expectedGroups": ["09", "30"] },
+        { "text": "prefix_09:30", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "09:30_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "9:30", "shouldMatch": false, "description": "Rejects single-digit hours" }
       ]
     },
     {
       "id": "m4_c16",
       "type": "compound",
       "scaffold": "fading",
-      "prompt": "Match a grouped word command followed by one or more spaces and arguments strictly from start to end.",
+      "prompt": "Parse command-line inputs strictly from start to end, capturing the primary word command in Group 1 and all remaining arguments in Group 2.",
+      "hint": "Anchor with ^ and $, capture the first word with (\\w+), match spaces with \\s+, and capture remaining text with (.+).",
       "ghostTemplate": "^(\\w+)\\s+(.+)$",
       "canonicalSolution": "^(\\w+)\\s+(.+)$",
       "testCases": [
-        { "text": "git push origin main", "shouldMatch": true },
-        { "text": "npm install", "shouldMatch": true },
-        { "text": "run", "shouldMatch": false },
-        { "text": "  run app", "shouldMatch": false }
+        { "text": "git push origin main", "shouldMatch": true, "expected": "git push origin main", "expectedGroups": ["git", "push origin main"] },
+        { "text": "prefix-git push", "shouldMatch": false, "description": "Enforces ^ anchor against leading whitespace/noise" },
+        { "text": "git push_suffix", "shouldMatch": true, "expected": "git push_suffix", "expectedGroups": ["git", "push_suffix"] },
+        { "text": "run", "shouldMatch": false, "description": "Rejects commands without arguments" }
       ]
     },
     {
       "id": "m4_c17",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match an IPv4 address: grouped 1 to 3 digits with dot repeated 3 times, ending with 1 to 3 digits.",
+      "prompt": "Validate standard IPv4 network addresses consisting of 3 repeated dot-terminated octets followed by a final octet, strictly from start to end. Capture only the repeated block sequence in Group 1 (leaving the final octet uncaptured outside of parentheses).",
+      "hint": "Combine (\\d{1,3}\\.){3} with a trailing \\d{1,3}, anchored strictly with ^ and $.",
       "canonicalSolution": "^(\\d{1,3}\\.){3}\\d{1,3}$",
       "testCases": [
-        { "text": "192.168.1.1", "shouldMatch": true },
-        { "text": "10.0.0.255", "shouldMatch": true },
-        { "text": "192.168.1", "shouldMatch": false },
-        { "text": "192.168.1.1.1", "shouldMatch": false },
-        { "text": "abc.def.ghi.jkl", "shouldMatch": false }
+        { "text": "192.168.1.1", "shouldMatch": true, "expected": "192.168.1.1", "expectedGroups": ["1."] },
+        { "text": "10.0.0.255", "shouldMatch": true, "expected": "10.0.0.255", "expectedGroups": ["0."] },
+        { "text": "prefix_192.168.1.1", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "192.168.1.1_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "192.168.1", "shouldMatch": false, "description": "Rejects incomplete IP addresses with missing octets" },
+        { "text": "1921.168.1.1", "shouldMatch": false, "description": "Rejects leading octet with more than 3 digits" },
+        { "text": "192.168.1000.1", "shouldMatch": false, "description": "Rejects middle octet with more than 3 digits" },
+        { "text": "192.168.1.1234", "shouldMatch": false, "description": "Rejects trailing octet with more than 3 digits" }
       ]
     },
     {
       "id": "m4_c18",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match Social Security Number format XXX-XX-XXXX using 3 digit groups strictly from start to end.",
+      "prompt": "Parse Social Security Numbers in XXX-XX-XXXX format strictly from start to end. Capture the 3-digit area code in Group 1, 2-digit group number in Group 2, and 4-digit serial number in Group 3.",
+      "hint": "Use three independent digit groups (\\d{3}), (\\d{2}), (\\d{4}) separated by hyphens, anchored with ^ and $.",
       "canonicalSolution": "^(\\d{3})-(\\d{2})-(\\d{4})$",
       "testCases": [
-        { "text": "000-12-3456", "shouldMatch": true },
-        { "text": "219-09-9812", "shouldMatch": true },
-        { "text": "219099812", "shouldMatch": false },
-        { "text": "219-9-9812", "shouldMatch": false },
-        { "text": "219-09-98123", "shouldMatch": false }
+        { "text": "000-12-3456", "shouldMatch": true, "expected": "000-12-3456", "expectedGroups": ["000", "12", "3456"] },
+        { "text": "prefix_000-12-3456", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "000-12-3456_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "000123456", "shouldMatch": false, "description": "Rejects unhyphenated numbers" }
       ]
     },
     {
       "id": "m4_c19",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match Semantic Versioning string format 'vX.Y.Z' using three grouped integer components.",
+      "prompt": "Parse Semantic Versioning strings formatted as 'vX.Y.Z' strictly from start to end. Capture major version in Group 1, minor version in Group 2, and patch version in Group 3.",
+      "hint": "Start with literal v, wrap each digit section (\\d+) in parentheses separated by escaped dots \\., anchored with ^ and $.",
       "canonicalSolution": "^v(\\d+)\\.(\\d+)\\.(\\d+)$",
       "testCases": [
-        { "text": "v2.0.0", "shouldMatch": true },
-        { "text": "v12.4.101", "shouldMatch": true },
-        { "text": "2.0.0", "shouldMatch": false },
-        { "text": "v2.0", "shouldMatch": false },
-        { "text": "version2.0.0", "shouldMatch": false }
+        { "text": "v2.0.0", "shouldMatch": true, "expected": "v2.0.0", "expectedGroups": ["2", "0", "0"] },
+        { "text": "prefix_v2.0.0", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "v2.0.0_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "2.0.0", "shouldMatch": false, "description": "Rejects missing prefix 'v'" }
       ]
     },
     {
       "id": "m4_c20",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match dollar currency format starting with '$', followed by grouped integer digits and optional decimal cents.",
-      "canonicalSolution": "^\\$(\\d+)(\\.\\d{2})?$",
+      "prompt": "Parse price values formatted as '$XX.YY' strictly from start to end. Capture the integer dollar amount in Group 1 and the 2-digit cent amount in Group 2 (excluding the dot).",
+      "hint": "Escape the dollar sign \\$, capture dollars with (\\d+), match the dot \\., and capture 2-digit cents with (\\d{2}), anchored strictly with ^ and $.",
+      "canonicalSolution": "^\\$(\\d+)\\.(\\d{2})$",
       "testCases": [
-        { "text": "$19.99", "shouldMatch": true },
-        { "text": "$100", "shouldMatch": true },
-        { "text": "$0.50", "shouldMatch": true },
-        { "text": "19.99", "shouldMatch": false },
-        { "text": "$19.9", "shouldMatch": false },
-        { "text": "$19.999", "shouldMatch": false }
+        { "text": "$19.99", "shouldMatch": true, "expected": "$19.99", "expectedGroups": ["19", "99"] },
+        { "text": "$100.00", "shouldMatch": true, "expected": "$100.00", "expectedGroups": ["100", "00"] },
+        { "text": "prefix_$19.99", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "$19.99_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "$19.9", "shouldMatch": false, "description": "Rejects incomplete 1-digit cent values" },
+        { "text": "$19", "shouldMatch": false, "description": "Rejects price missing mandatory cent values" }
       ]
     },
     {
       "id": "m4_c21",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match 2D integer coordinates enclosed in parentheses format '(X,Y)' with grouped numbers.",
+      "prompt": "Parse 2D integer coordinates formatted as '(X,Y)' strictly from start to end. Capture the X coordinate integer in Group 1 and the Y coordinate integer in Group 2.",
+      "hint": "Escape enclosing parentheses \\( and \\), capturing digits inside (\\d+),(\\d+) anchored with ^ and $.",
       "canonicalSolution": "^\\((\\d+),(\\d+)\\)$",
       "testCases": [
-        { "text": "(10,20)", "shouldMatch": true },
-        { "text": "(0,500)", "shouldMatch": true },
-        { "text": "10,20", "shouldMatch": false },
-        { "text": "(10)", "shouldMatch": false },
-        { "text": "(10, 20)", "shouldMatch": false }
+        { "text": "(10,20)", "shouldMatch": true, "expected": "(10,20)", "expectedGroups": ["10", "20"] },
+        { "text": "prefix_(10,20)", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "(10,20)_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "(10, 20)", "shouldMatch": false, "description": "Rejects unhandled spaces" }
       ]
     },
     {
       "id": "m4_c22",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match phone number with grouped 3-digit area code in parentheses, space, and 7 hyphenated digits.",
+      "prompt": "Parse phone numbers formatted as '(XXX) XXX-XXXX' strictly from start to end. Capture the 3-digit area code (without parentheses) in Group 1 and the 7 hyphenated subscriber digits in Group 2.",
+      "hint": "Escape parentheses around area code \\((\\d{3})\\), add space \\s+, and capture rest with (\\d{3}-\\d{4}) anchored with ^ and $.",
       "canonicalSolution": "^\\((\\d{3})\\)\\s+(\\d{3}-\\d{4})$",
       "testCases": [
-        { "text": "(800) 555-1234", "shouldMatch": true },
-        { "text": "(123) 456-7890", "shouldMatch": true },
-        { "text": "800 555-1234", "shouldMatch": false },
-        { "text": "(800)555-1234", "shouldMatch": false },
-        { "text": "(80) 555-1234", "shouldMatch": false }
+        { "text": "(800) 555-1234", "shouldMatch": true, "expected": "(800) 555-1234", "expectedGroups": ["800", "555-1234"] },
+        { "text": "prefix_(800) 555-1234", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "(800) 555-1234_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "(800)555-1234", "shouldMatch": false, "description": "Rejects missing space after area code" }
       ]
     },
     {
       "id": "m4_c23",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match ISO date format YYYY-MM-DD using grouped year, month, and day digits strictly from start to end.",
+      "prompt": "Parse ISO calendar dates formatted as YYYY-MM-DD strictly from start to end. Capture the 4-digit year in Group 1, 2-digit month in Group 2, and 2-digit day in Group 3.",
+      "hint": "Anchor with ^ and $, creating three groups (\\d{4}), (\\d{2}), and (\\d{2}) separated by hyphens.",
       "canonicalSolution": "^(\\d{4})-(\\d{2})-(\\d{2})$",
       "testCases": [
-        { "text": "2026-09-07", "shouldMatch": true },
-        { "text": "1999-12-31", "shouldMatch": true },
-        { "text": "26-09-07", "shouldMatch": false },
-        { "text": "2026/09/07", "shouldMatch": false },
-        { "text": "2026-9-7", "shouldMatch": false }
+        { "text": "2026-09-07", "shouldMatch": true, "expected": "2026-09-07", "expectedGroups": ["2026", "09", "07"] },
+        { "text": "prefix_2026-09-07", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "2026-09-07_suffix", "shouldMatch": false, "description": "Enforces $ anchor against trailing noise" },
+        { "text": "2026/09/07", "shouldMatch": false, "description": "Rejects slash separators" }
       ]
     },
     {
       "id": "m4_c24",
       "type": "compound",
       "scaffold": "blind",
-      "prompt": "Match API path starting with grouped '/v1' or '/v2', followed by '/' and one or more word characters.",
+      "prompt": "Parse REST API routing paths in the format '/version/resource', where the version is either 'v1' or 'v2'. Match the surrounding slashes outside your groups so Group 1 captures only the version string ('v1' or 'v2') and Group 2 captures the resource word.",
+      "hint": "Anchor with ^ and $, place literal slashes outside the groups as ^/(v1|v2)/(\\w+)$, and extract 'v1' or 'v2' in Group 1.",
       "canonicalSolution": "^/(v1|v2)/(\\w+)$",
       "testCases": [
-        { "text": "/v1/users", "shouldMatch": true },
-        { "text": "/v2/orders", "shouldMatch": true },
-        { "text": "/v3/users", "shouldMatch": false },
-        { "text": "/v1/", "shouldMatch": false },
-        { "text": "v1/users", "shouldMatch": false }
-      ]
-    },
-    {
-      "id": "m4_c25",
-      "type": "compound",
-      "scaffold": "blind",
-      "prompt": "Match a valid IPv4 address where each octet is constrained to 0-255, rejecting out-of-range values like 999 that the naive grouped pattern from m4_c17 would still accept.",
-      "canonicalSolution": "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$",
-      "testCases": [
-        { "text": "192.168.1.1", "shouldMatch": true, "description": "All four octets are within 0-255." },
-        { "text": "255.255.255.255", "shouldMatch": true, "description": "Boundary case: the maximum valid octet value in every position." },
-        { "text": "0.0.0.0", "shouldMatch": true, "description": "Boundary case: the minimum valid octet value in every position." },
-        { "text": "999.999.999.999", "shouldMatch": false, "description": "Out-of-range octets are rejected here, unlike the naive (\\d{1,3}\\.){3}\\d{1,3} pattern from m4_c17, which would incorrectly match this." },
-        { "text": "256.1.1.1", "shouldMatch": false, "description": "256 exceeds the maximum valid octet value of 255." },
-        { "text": "192.168.1", "shouldMatch": false, "description": "Missing the fourth octet." }
+        { "text": "/v1/users", "shouldMatch": true, "expected": "/v1/users", "expectedGroups": ["v1", "users"] },
+        { "text": "/v2/products", "shouldMatch": true, "expected": "/v2/products", "expectedGroups": ["v2", "products"] },
+        { "text": "prefix_/v1/users", "shouldMatch": false, "description": "Enforces ^ anchor against leading noise" },
+        { "text": "/v1/users/extra", "shouldMatch": false, "description": "Enforces $ anchor against trailing path segments" },
+        { "text": "/v3/users", "shouldMatch": false, "description": "Rejects unsupported API versions" }
       ]
     }
   ]

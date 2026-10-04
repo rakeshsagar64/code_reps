@@ -1,35 +1,72 @@
 export const validators = {
   // Regex Strategy
   regex: (userInput, validationData) => {
-    if (!userInput) return false;
+    if (!userInput || typeof userInput !== 'string') return false;
+
     try {
+      // 1. Normalize non-breaking spaces in user input
+      const cleanInput = userInput.replace(/\u00a0/g, ' ');
       const flags = validationData.flags || '';
-      const rx = new RegExp(userInput, flags);
+      const rx = new RegExp(cleanInput, flags);
 
       return validationData.testCases.every((tc) => {
-        // Normalize non-breaking spaces (\u00A0) to standard ASCII spaces (\u0020)
-        const text = tc.text.replace(/\u00a0/g, ' ');
-        const matches = text.match(rx) || [];
+        // 2. Normalize text and reset regex state for 'g' / 'y' flags
+        const text = (tc.text || '').replace(/\u00a0/g, ' ');
+        rx.lastIndex = 0;
 
-        // Negative test cases: must yield zero matches
+        const execMatch = rx.exec(text);
+        const didMatch = execMatch !== null;
+
+        // 3. Validate boolean match condition
+        if (tc.shouldMatch !== didMatch) {
+          return false;
+        }
+
+        // If it shouldn't match and didn't, the negative test case passes
         if (!tc.shouldMatch) {
-          return matches.length === 0;
+          return true;
         }
 
-        // Positive test cases: must yield at least one match
-        if (matches.length === 0) return false;
+        // --- POSITIVE TEST CASE VALIDATIONS ---
 
-        // Check array of expected matches if defined
-        if (Array.isArray(tc.expectedMatches)) {
-          return tc.expectedMatches.every((exp) =>
-            matches.includes(exp.replace(/\u00a0/g, ' '))
-          );
-        }
-
-        // Check single expected match string if defined
+        // A. Validate exact full match string (tc.expected)
         if (typeof tc.expected === 'string') {
           const normalizedExpected = tc.expected.replace(/\u00a0/g, ' ');
-          return matches.includes(normalizedExpected);
+          if (execMatch[0] !== normalizedExpected) {
+            return false;
+          }
+        }
+
+        // B. Validate Capture Groups (Crucial for Grouping/Quantifier modules)
+        if (Array.isArray(tc.expectedGroups)) {
+          const actualGroups = execMatch.slice(1); // Exclude fullMatch at index 0
+          if (actualGroups.length !== tc.expectedGroups.length) {
+            return false;
+          }
+          const groupsMatch = tc.expectedGroups.every((expGroup, idx) => {
+            if (expGroup === undefined || expGroup === null) {
+              return actualGroups[idx] === undefined;
+            }
+            return actualGroups[idx] === expGroup.replace(/\u00a0/g, ' ');
+          });
+          if (!groupsMatch) return false;
+        }
+
+        // C. Validate Multiple Global Matches (when tc.expectedMatches is defined)
+        if (Array.isArray(tc.expectedMatches)) {
+          // Collect all global matches cleanly using matchAll
+          const globalRx = new RegExp(cleanInput, flags.includes('g') ? flags : flags + 'g');
+          const allMatches = Array.from(text.matchAll(globalRx)).map((m) =>
+            m[0].replace(/\u00a0/g, ' ')
+          );
+
+          if (allMatches.length !== tc.expectedMatches.length) {
+            return false;
+          }
+          const allMatchEqual = tc.expectedMatches.every(
+            (exp, idx) => allMatches[idx] === exp.replace(/\u00a0/g, ' ')
+          );
+          if (!allMatchEqual) return false;
         }
 
         return true;

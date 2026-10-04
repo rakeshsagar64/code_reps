@@ -1,25 +1,74 @@
 import React from 'react';
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
-export function LiveTestCaseList({ testCases = [], userInput = '' }) {
+export function LiveTestCaseList({ testCases = [], userInput = '', card = null }) {
   let compiledRegex = null;
   let regexError = null;
 
-  // Compile user regex safely
+  // Safely compile user regex
   if (userInput.trim() !== '') {
     try {
-      // Force 'g' flag for global substring highlighting across the text
+      // Global flag for substring matching/highlighting
       compiledRegex = new RegExp(userInput, 'g');
     } catch (err) {
       regexError = err.message;
     }
   }
 
+  // Evaluate a single test case against all regex engine requirements
+  const checkPass = (tc) => {
+    if (!userInput || !compiledRegex || regexError) return false;
+
+    // Always reset lastIndex before testing
+    compiledRegex.lastIndex = 0;
+
+    try {
+      const match = compiledRegex.exec(tc.text);
+      const doesMatch = match !== null;
+
+      if (tc.shouldMatch) {
+        if (!doesMatch) return false;
+
+        // 1. Validate full expected match substring
+        if (tc.expected !== undefined && match[0] !== tc.expected) {
+          return false;
+        }
+
+        // 2. Validate expected capture groups array
+        if (tc.expectedGroups !== undefined) {
+          const capturedGroups = Array.from(match)
+            .slice(1)
+            .map((g) => (g === undefined ? null : g));
+
+          if (capturedGroups.length !== tc.expectedGroups.length) {
+            return false;
+          }
+
+          for (let i = 0; i < tc.expectedGroups.length; i++) {
+            if (capturedGroups[i] !== tc.expectedGroups[i]) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      } else {
+        // For negative test cases, return true only if it does NOT match
+        return !doesMatch;
+      }
+    } catch {
+      return false;
+    }
+  };
+
   // Render text with dynamically highlighted regex matches
-  const renderHighlightedText = (text, shouldMatch) => {
+  const renderHighlightedText = (tc) => {
+    const { text } = tc;
     if (!userInput || !compiledRegex || regexError) {
       return <span>{text}</span>;
     }
+
+    const isPassed = checkPass(tc);
 
     // Reset regex cursor state before execution
     compiledRegex.lastIndex = 0;
@@ -38,14 +87,17 @@ export function LiveTestCaseList({ testCases = [], userInput = '' }) {
           parts.push(text.slice(lastIndex, match.index));
         }
 
-        // Color coding: green if this text is supposed to match, red if it's matching text it shouldn't
-        const highlightClass = shouldMatch
+        // Highlight green if this test case passes overall, red if it fails
+        const highlightClass = isPassed
           ? 'match-highlight-valid'
           : 'match-highlight-invalid';
 
         // Append matched substring wrapped in <mark>
         parts.push(
-          <mark key={`${match.index}-${matchCount}`} className={`match-highlight ${highlightClass}`}>
+          <mark
+            key={`${match.index}-${matchCount}`}
+            className={`match-highlight ${highlightClass}`}
+          >
             {match[0]}
           </mark>
         );
@@ -67,14 +119,6 @@ export function LiveTestCaseList({ testCases = [], userInput = '' }) {
     } catch {
       return <span>{text}</span>;
     }
-  };
-
-  // Evaluate single test case
-  const checkPass = (tc) => {
-    if (!userInput || !compiledRegex || regexError) return false;
-    compiledRegex.lastIndex = 0;
-    const matches = compiledRegex.test(tc.text);
-    return tc.shouldMatch ? matches : !matches;
   };
 
   const passedCount = testCases.filter(checkPass).length;
@@ -113,9 +157,7 @@ export function LiveTestCaseList({ testCases = [], userInput = '' }) {
                 ) : (
                   <XCircle size={16} className="test-case-icon pending" />
                 )}
-                <span className="test-case-text">
-                  {renderHighlightedText(tc.text, tc.shouldMatch)}
-                </span>
+                <span className="test-case-text">{renderHighlightedText(tc)}</span>
               </div>
 
               <span className={`test-case-badge ${tc.shouldMatch ? 'match' : 'skip'}`}>
